@@ -1,0 +1,30 @@
+{
+  "name": "visual-modeller-energy",
+  "version": "0.0.1",
+  "description": "",
+  "main": "build/visual-modeller-energy.min.js",
+  "module": "build/visual-modeller-energy.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grahampullan/visual-modeller-energy.git"
+  },
+  "author": "Graham Pullan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/grahampullan/visual-modeller-energy/issues"
+  },
+  "homepage": "https://github.com/grahampullan/visual-modeller-energy#readme",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^5.0.7",
+    "@rollup/plugin-terser": "^0.4.4"
+  },
+  "dependencies": {
+    "visual-modeller-core": "^0.0.2"
+  }
+}
