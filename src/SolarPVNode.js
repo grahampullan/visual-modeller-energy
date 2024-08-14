@@ -11,7 +11,7 @@ class SolarPVNode extends EnergyNode {
         socketOptions.linkId = options.linkId || '';
         socketOptions.position = options.position || 'right'; // output on right side
         socketOptions.state = options.state || {max: null, value:null, constraint: true, timeVarying: false, timeSeries: null};
-        this.addSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
+        this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
     }
 
     setConstraints(data) {
@@ -24,7 +24,7 @@ class SolarPVNode extends EnergyNode {
             state.value = state.timeSeries[timeStep];
         } 
     }
-    
+
 }
 
 export { SolarPVNode };

@@ -11,7 +11,7 @@ class GridExportNode extends EnergyNode {
         socketOptions.linkId = options.linkId || '';
         socketOptions.position = options.position || 'left';
         socketOptions.state = options.state || {max: Infinity, value:null, constraint: false};
-        this.addSocketByIndex(0, new Socket(socketOptions));
+        this.setSocketByIndex(0, new Socket(socketOptions));
     }
 }
 

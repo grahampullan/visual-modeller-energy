@@ -16,7 +16,7 @@ class EnergyLink extends Link {
                 console.log('problem - both sockets have constraints', this);
             } else {
                 if (state1.value <= state2.max) {
-                    this.value = state1.value;
+                    this.state.value = state1.value;
                 }
             }
         }
@@ -26,7 +26,7 @@ class EnergyLink extends Link {
                 console.log('problem - both sockets have constraints', this);
             } else {
                 if (state2.value <= state1.max) {
-                    this.value = state2.value;
+                    this.state.value = state2.value;
                 }
             }
         }
