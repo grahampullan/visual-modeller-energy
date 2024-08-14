@@ -35,10 +35,13 @@
         const loadNode = new LoadNode({state:{max: null, value:null, constraint: true, timeVarying: true, timeSeries: load}});
         model.addNode(gridSupplyNode);
         model.addNode(loadNode);
-        const link = new Link({socket1: gridSupplyNode, socket2: loadNode});
+        const link = new Link({socket1: gridSupplyNode.sockets[0], socket2: loadNode.sockets[0]});
         model.addLink(link);
-        model.addLog(new Log({name:"supply power", target:link.state.value}));
-        model.run;
+        console.log(model);
+        model.addLog(new Log({name:"supply power", target:link}));
+        model.run();
+        console.log(model.logs[0]);
+        console.log(model);
 
 
 

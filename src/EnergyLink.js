@@ -11,6 +11,9 @@ class EnergyLink extends Link {
         const socket2 = this.socket2;
         const state2 = socket2.state;
 
+        //console.log(state1);
+        //console.log(state2);
+
         if (state1.constraint) {
             if (state2.constraint) {
                 console.log('problem - both sockets have constraints', this);

@@ -20,6 +20,12 @@ class Model {
         return newLinkId;
     }
 
+    getLogId() {
+        let newLogId = `log-${this.maxLogId}`;
+        this.maxLogId++;
+        return newLogId;
+    }
+
     addNode(node) {
         node.id = this.getNodeId();
         this.nodes.push(node);
@@ -144,11 +150,11 @@ class Log {
     constructor(options) {
         this.name = options.name || 'log';
         this.target = options.target || null;
-        this.values = [];
+        this.states = [];
     }
 
-    addToLog() {
-        this.values.push(this.target);
+    writeToLog() {
+        this.states.push(this.target.state);
     }
 }
 
@@ -316,6 +322,9 @@ class EnergyLink extends Link {
         const state1 = socket1.state;
         const socket2 = this.socket2;
         const state2 = socket2.state;
+
+        //console.log(state1);
+        //console.log(state2);
 
         if (state1.constraint) {
             if (state2.constraint) {
