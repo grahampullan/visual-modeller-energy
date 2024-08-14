@@ -1,6 +1,6 @@
-import { Node, Socket } from 'visual-modeller-core';
+import { EnergyNode } from "./EnergyNode";
 
-class ControllerNode extends Node {
+class ControllerNode extends EnergyNode {
     constructor(options) {
         super(options);
         this.class = 'controlNode';
@@ -8,7 +8,7 @@ class ControllerNode extends Node {
         this.inputSocketOrder = options.inputSocketOrder || [];
         this.outputSocketOrder = options.outputSocketOrder || [];
     }
-    
+
 }
 
-export { SolarPVNode };
+export { ControllerNode };

@@ -1,6 +1,7 @@
-import { Node, Socket } from 'visual-modeller-core';
+import { EnergyNode } from "./EnergyNode";
+import { Socket } from 'visual-modeller-core';
 
-class GridExportNode extends Node {
+class GridExportNode extends EnergyNode {
     constructor(options) {
         super(options);
         this.class = 'endNode';
@@ -10,7 +11,7 @@ class GridExportNode extends Node {
         socketOptions.linkId = options.linkId || '';
         socketOptions.position = options.position || 'left';
         socketOptions.state = options.state || {max: Infinity, value:null, constraint: false};
-        this.addSocketByIndex(0, socketOptions);
+        this.addSocketByIndex(0, new Socket(socketOptions));
     }
 }
 
