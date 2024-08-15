@@ -7,11 +7,9 @@ class GridSupplyNode extends EnergyNode {
         this.class = 'endNode';
         this.type = 'gridSupply';
         const socketOptions = {};
-        socketOptions.name = options.name || 'Grid Supply';
-        socketOptions.linkId = options.linkId || '';
+        socketOptions.name = options.socketName || 'Grid Supply';
         socketOptions.position = options.position || 'right'; // output on right side
-        socketOptions.state = options.state || {max: Infinity, value:null, constraint: false};
-        console.log(this);
+        socketOptions.state = options.socketState || {max: Infinity, value:null, valueType: "variable"};
         this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
     }
 }

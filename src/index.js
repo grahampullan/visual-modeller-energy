@@ -5,7 +5,8 @@ export {SolarPVNode} from './SolarPVNode';
 export {ControllerNode} from './ControllerNode';
 export {EnergyModel as Model} from './EnergyModel';
 export {EnergyLink as Link} from './EnergyLink';
-export {Log} from 'visual-modeller-core';
+export {Log, Socket} from 'visual-modeller-core';
+
 
 
 
