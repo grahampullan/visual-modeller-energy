@@ -7,10 +7,9 @@ class GridExportNode extends EnergyNode {
         this.class = 'endNode';
         this.type = 'gridExport';
         const socketOptions = {};
-        socketOptions.name = options.name || 'Grid Export';
-        socketOptions.linkId = options.linkId || '';
+        socketOptions.name = options.socketName || 'Grid Export';
         socketOptions.position = options.position || 'left';
-        socketOptions.state = options.state || {max: Infinity, value:null, constraint: false};
+        socketOptions.state = options.socketState || {max: Infinity, value:null, valueType: "variable"};
         this.setSocketByIndex(0, new Socket(socketOptions));
     }
 }

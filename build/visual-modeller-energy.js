@@ -33,6 +33,12 @@ class Model {
 
     addLink(link) {
         link.id = this.getLinkId();
+        const s1 = link.socket1;
+        s1.link = link;
+        s1.otherSocket = link.socket2;
+        const s2 = link.socket2;
+        s2.link = link;
+        s2.otherSocket = link.socket1;
         this.links.push(link);
     }
 
@@ -64,6 +70,18 @@ class Model {
     removeLogById(id) {
         this.logs = this.logs.filter(l => l.id !== id);
     }
+
+    clearLogs() {
+        this.logs.forEach(l => l.clear());
+    }
+
+    getLinkBySocket(socket) {
+        return this.links.find(l => l.socket1 === socket || l.socket2 === socket);
+    }
+
+    getNodeBySocket(socket) {
+        return this.nodes.find(n => n.sockets.includes(socket));
+    }
 }
 
 class Node {
@@ -80,7 +98,7 @@ class Node {
     }
 
     getSocketId() {
-        let newSocketId = this.maxSocketId;
+        let newSocketId = `socket-${this.maxSocketId}`;
         this.maxSocketId++;
         return newSocketId;
     }
@@ -113,7 +131,11 @@ class Node {
 
     getSocketByIndex(index) {
         return this.sockets[index];
-    }   
+    }
+    
+    getSocketByName(name) {
+        return this.sockets.find(s => s.name === name);
+    }
 
     removeSocket(socket) {
         this.sockets = this.sockets.filter(s => s !== socket);
@@ -133,7 +155,6 @@ class Socket {
     constructor(options) {
         this.name = options.name || 'socket';
         this.state = options.state || {};
-        this.linkId = options.linkId || '';
         this.position = options.position || 'left';  
     }
 }
@@ -143,6 +164,16 @@ class Link {
         this.socket1 = options.socket1 || null;
         this.socket2 = options.socket2 || null;
         this.state = options.state || {};
+    }
+
+    getOtherSocket(socket) {
+        if (socket === this.socket1) {
+            return this.socket2;
+        } else if (socket === this.socket2) {
+            return this.socket1;
+        } else {
+            return null;
+        }
     }
 }
 
@@ -154,7 +185,11 @@ class Log {
     }
 
     writeToLog() {
-        this.states.push(this.target.state);
+        this.states.push({...this.target.state});
+    }
+
+    clear() {
+        this.states = [];
     }
 }
 
@@ -178,10 +213,9 @@ class GridExportNode extends EnergyNode {
         this.class = 'endNode';
         this.type = 'gridExport';
         const socketOptions = {};
-        socketOptions.name = options.name || 'Grid Export';
-        socketOptions.linkId = options.linkId || '';
+        socketOptions.name = options.socketName || 'Grid Export';
         socketOptions.position = options.position || 'left';
-        socketOptions.state = options.state || {max: Infinity, value:null, constraint: false};
+        socketOptions.state = options.socketState || {max: Infinity, value:null, valueType: "variable"};
         this.setSocketByIndex(0, new Socket(socketOptions));
     }
 }
@@ -192,11 +226,9 @@ class GridSupplyNode extends EnergyNode {
         this.class = 'endNode';
         this.type = 'gridSupply';
         const socketOptions = {};
-        socketOptions.name = options.name || 'Grid Supply';
-        socketOptions.linkId = options.linkId || '';
+        socketOptions.name = options.socketName || 'Grid Supply';
         socketOptions.position = options.position || 'right'; // output on right side
-        socketOptions.state = options.state || {max: Infinity, value:null, constraint: false};
-        console.log(this);
+        socketOptions.state = options.socketState || {max: Infinity, value:null, valueType: "variable"};
         this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
     }
 }
@@ -207,17 +239,16 @@ class LoadNode extends EnergyNode {
         this.class = 'endNode';
         this.type = 'loadNode';
         const socketOptions = {};
-        socketOptions.name = options.name || 'Load';
-        socketOptions.linkId = options.linkId || '';
+        socketOptions.name = options.socketName || 'Load';
         socketOptions.position = options.position || 'left'; // input on left side
-        socketOptions.state = options.state || {max: null, value:null, constraint: true, timeVarying: false, timeSeries: null};
+        socketOptions.state = options.socketState || {max: null, value:null, valueType: "constraint", timeVarying: false, timeSeries: null};
         this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
     }
 
     setConstraints(data) {
         const timeStep = data.timeStep;
         const state = this.getSocketByIndex(0).state;
-        if (!state.constraint) {
+        if (state.valueType !== "constraint") {
             return;
         }
         if (state.timeVarying) {
@@ -233,17 +264,16 @@ class SolarPVNode extends EnergyNode {
         this.class = 'endNode';
         this.type = 'solarPVNode';
         const socketOptions = {};
-        socketOptions.name = options.name || 'Solar PV';
-        socketOptions.linkId = options.linkId || '';
+        socketOptions.name = options.socketName || 'Solar PV';
         socketOptions.position = options.position || 'right'; // output on right side
-        socketOptions.state = options.state || {max: null, value:null, constraint: true, timeVarying: false, timeSeries: null};
+        socketOptions.state = options.socketState || {max: null, value:null, valueType: "constraint", timeVarying: false, timeSeries: null};
         this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
     }
 
     setConstraints(data) {
         const timeStep = data.timeStep;
         const state = this.getSocketByIndex(0).state;
-        if (!state.constraint) {
+        if (!state.valueType === "constraint") {
             return;
         }
         if (state.timeVarying) {
@@ -258,8 +288,87 @@ class ControllerNode extends EnergyNode {
         super(options);
         this.class = 'controlNode';
         this.type = 'controller';
-        this.inputSocketOrder = options.inputSocketOrder || [];
+        this.inputSocketOrder = options.inputSocketOrder || []; // array of socket names
         this.outputSocketOrder = options.outputSocketOrder || [];
+    }
+
+    setFluxTargets(){
+        //console.log("in setFluxTargets");
+        const controllerInputSockets = this.inputSocketOrder.map(socketName => this.getSocketByName(socketName));
+        const controllerOutputSockets = this.outputSocketOrder.map(socketName => this.getSocketByName(socketName));
+        const inputConnectedSockets = controllerInputSockets.map( s => s.otherSocket);
+        const outputConnectedSockets = controllerOutputSockets.map( s => s.otherSocket);
+       // console.log("inputConnectedSockets", inputConnectedSockets);
+        //console.log("outputConnectedSockets", outputConnectedSockets);
+        let totalInput = inputConnectedSockets.filter( s => s.state.valueType == "constraint").reduce((acc, s) => acc + s.state.value, 0);
+        let totalOutput = outputConnectedSockets.filter( s => s.state.valueType == "constraint").reduce((acc, s) => acc + s.state.value, 0);
+        //console.log("totalInput", totalInput);
+        //console.log("totalOutput", totalOutput);
+        if (totalInput >= totalOutput){ // more supply than demand
+            outputConnectedSockets.forEach( s => {
+                if (s.state.valueType == "constraint"){
+                    const controllerSocket = s.otherSocket;
+                    controllerSocket.state.value = null;
+                    controllerSocket.state.valueType = "variable";
+                    controllerSocket.state.max = Infinity;
+                    totalInput -= s.state.value;
+                }
+            });
+            outputConnectedSockets.forEach( s => {
+                if (s.state.valueType == "variable"){
+                    const controllerSocket = s.otherSocket;
+                    const targetValue = Math.min(totalInput, s.state.max);
+                    controllerSocket.state.value = targetValue;
+                    controllerSocket.state.valueType = "target";
+                    totalInput -= targetValue;
+                }
+            });
+            inputConnectedSockets.forEach( s => {
+                if (s.state.valueType == "constraint"){
+                    const controllerSocket = s.otherSocket;
+                    controllerSocket.state.value = null;
+                    controllerSocket.state.valueType = "variable";
+                    controllerSocket.state.max = Infinity;
+                }
+                if (s.state.valueType == "variable"){
+                    const controllerSocket = s.otherSocket;
+                    controllerSocket.state.value = 0.;
+                    controllerSocket.state.valueType = "target";
+                }
+            });
+        } else { // more demand than supply
+            inputConnectedSockets.forEach( s => {
+                if (s.state.valueType == "constraint"){
+                    const controllerSocket = s.otherSocket;
+                    controllerSocket.state.value = null;
+                    controllerSocket.state.valueType = "variable";
+                    controllerSocket.state.max = Infinity;
+                    totalOutput -= s.state.value;
+                }
+            });
+            inputConnectedSockets.forEach( s => {
+                if (s.state.valueType == "variable"){
+                    const controllerSocket = s.otherSocket;
+                    const targetValue = Math.min(totalOutput, s.state.max);
+                    controllerSocket.state.value = targetValue;
+                    controllerSocket.state.valueType = "target";
+                    totalOutput -= targetValue;
+                }
+            });
+            outputConnectedSockets.forEach( s => {
+                if (s.state.valueType == "constraint"){
+                    const controllerSocket = s.otherSocket;
+                    controllerSocket.state.value = null;
+                    controllerSocket.state.valueType = "variable";
+                    controllerSocket.state.max = Infinity;
+                }
+                if (s.state.valueType == "variable"){
+                    const controllerSocket = s.otherSocket;
+                    controllerSocket.state.value = 0.;
+                    controllerSocket.state.valueType = "target";
+                }
+            });
+        }
     }
 
 }
@@ -323,26 +432,25 @@ class EnergyLink extends Link {
         const socket2 = this.socket2;
         const state2 = socket2.state;
 
-        //console.log(state1);
-        //console.log(state2);
+        //console.log(socket1, socket2);
 
-        if (state1.constraint) {
-            if (state2.constraint) {
-                console.log('problem - both sockets have constraints', this);
+        if (state1.valueType == state2.valueType) {
+            console.log("warning - both sockets for this link have the same valueType", this);
+        }
+
+        if (state2.valueType == "variable" && (state1.valueType == "constraint" || state1.valueType == "target")) {
+            if (state1.value <= state2.max) {
+                this.state.value = state1.value;
             } else {
-                if (state1.value <= state2.max) {
-                    this.state.value = state1.value;
-                }
+                console.log("problem - variable value exceeds constraint max", this);
             }
         }
 
-        if (state2.constraint) {
-            if (state1.constraint) {
-                console.log('problem - both sockets have constraints', this);
+        if (state1.valueType == "variable" && (state2.valueType == "constraint" || state2.valueType == "target")) {
+            if (state2.value <= state1.max) {
+                this.state.value = state2.value;
             } else {
-                if (state2.value <= state1.max) {
-                    this.state.value = state2.value;
-                }
+                console.log("problem - variable value exceeds constraint max", this);
             }
         }
 
@@ -350,4 +458,4 @@ class EnergyLink extends Link {
 
 }
 
-export { ControllerNode, GridExportNode, GridSupplyNode, EnergyLink as Link, LoadNode, Log, EnergyModel as Model, SolarPVNode };
+export { ControllerNode, GridExportNode, GridSupplyNode, EnergyLink as Link, LoadNode, Log, EnergyModel as Model, Socket, SolarPVNode };

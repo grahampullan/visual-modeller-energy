@@ -11,26 +11,25 @@ class EnergyLink extends Link {
         const socket2 = this.socket2;
         const state2 = socket2.state;
 
-        //console.log(state1);
-        //console.log(state2);
+        //console.log(socket1, socket2);
 
-        if (state1.constraint) {
-            if (state2.constraint) {
-                console.log('problem - both sockets have constraints', this);
+        if (state1.valueType == state2.valueType) {
+            console.log("warning - both sockets for this link have the same valueType", this);
+        }
+
+        if (state2.valueType == "variable" && (state1.valueType == "constraint" || state1.valueType == "target")) {
+            if (state1.value <= state2.max) {
+                this.state.value = state1.value;
             } else {
-                if (state1.value <= state2.max) {
-                    this.state.value = state1.value;
-                }
+                console.log("problem - variable value exceeds constraint max", this);
             }
         }
 
-        if (state2.constraint) {
-            if (state1.constraint) {
-                console.log('problem - both sockets have constraints', this);
+        if (state1.valueType == "variable" && (state2.valueType == "constraint" || state2.valueType == "target")) {
+            if (state2.value <= state1.max) {
+                this.state.value = state2.value;
             } else {
-                if (state2.value <= state1.max) {
-                    this.state.value = state2.value;
-                }
+                console.log("problem - variable value exceeds constraint max", this);
             }
         }
 
