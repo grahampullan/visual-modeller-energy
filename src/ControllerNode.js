@@ -2,6 +2,7 @@ import { EnergyNode } from "./EnergyNode";
 
 class ControllerNode extends EnergyNode {
     constructor(options) {
+        options = options || {};
         super(options);
         this.class = 'controlNode';
         this.type = 'controller';
@@ -10,17 +11,14 @@ class ControllerNode extends EnergyNode {
     }
 
     setFluxTargets(){
-        //console.log("in setFluxTargets");
         const controllerInputSockets = this.inputSocketOrder.map(socketName => this.getSocketByName(socketName));
         const controllerOutputSockets = this.outputSocketOrder.map(socketName => this.getSocketByName(socketName));
         const inputConnectedSockets = controllerInputSockets.map( s => s.otherSocket);
         const outputConnectedSockets = controllerOutputSockets.map( s => s.otherSocket);
-       // console.log("inputConnectedSockets", inputConnectedSockets);
-        //console.log("outputConnectedSockets", outputConnectedSockets);
+       
         let totalInput = inputConnectedSockets.filter( s => s.state.valueType == "constraint").reduce((acc, s) => acc + s.state.value, 0);
         let totalOutput = outputConnectedSockets.filter( s => s.state.valueType == "constraint").reduce((acc, s) => acc + s.state.value, 0);
-        //console.log("totalInput", totalInput);
-        //console.log("totalOutput", totalOutput);
+        
         if (totalInput >= totalOutput){ // more supply than demand
             outputConnectedSockets.forEach( s => {
                 if (s.state.valueType == "constraint"){

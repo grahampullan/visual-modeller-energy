@@ -3,6 +3,7 @@ import { Socket } from 'visual-modeller-core';
 
 class GridExportNode extends EnergyNode {
     constructor(options) {
+        options = options || {};
         super(options);
         this.class = 'endNode';
         this.type = 'gridExport';
