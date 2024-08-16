@@ -5,7 +5,18 @@ class EnergyModel extends Model {
         super(options);
         this.timeVarying = options.timeVarying || false;
         this.timeSteps = options.timeSteps || 1;
+        this.timeStepSize = options.timeStepSize || 1.0;
         this.timeStep = 0;
+    }
+
+    setTimeStep(timeStep) {
+        this.timeStep = timeStep;
+        this.nodes.forEach( n => n.timeStep = timeStep);
+    }
+
+    setTimeStepSize(timeStepSize) {
+        this.timeStepSize = timeStepSize;
+        this.nodes.forEach( n => n.timeStepSize = timeStepSize);
     }
 
     run() {
@@ -14,17 +25,19 @@ class EnergyModel extends Model {
         const logs = this.logs;
         const timeVarying = this.timeVarying;
         const timeSteps = this.timeSteps;
+        const timeStepSize = this.timeStepSize;
+        this.setTimeStepSize(timeStepSize);
         if (!timeVarying) {
             this.timeSteps = 1;
         }
 
         for (let i = 0; i < timeSteps; i++) {
-            this.timeStep = i;
+            this.setTimeStep(i);
             // solution process:
             //     allNodes - set fixed fluxes and flux limits - e.g. constrained fluxes
             //     socket.state.fluxTarget is set
 
-            nodes.forEach(node => node.setConstraints({timeStep:i})); // needs to know time step
+            nodes.forEach(node => node.setConstraints()); // needs to know time step
 
             //     allControllerNodes - set flux targets on sockets
 

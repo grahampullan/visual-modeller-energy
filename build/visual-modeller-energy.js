@@ -195,6 +195,7 @@ class Log {
 
 class EnergyNode extends Node {
     constructor(options) {
+        options = options || {};
         super(options);
     }
 
@@ -209,6 +210,7 @@ class EnergyNode extends Node {
 
 class GridExportNode extends EnergyNode {
     constructor(options) {
+        options = options || {};
         super(options);
         this.class = 'endNode';
         this.type = 'gridExport';
@@ -222,6 +224,7 @@ class GridExportNode extends EnergyNode {
 
 class GridSupplyNode extends EnergyNode {
     constructor(options) {
+        options = options || {};
         super(options);
         this.class = 'endNode';
         this.type = 'gridSupply';
@@ -235,6 +238,7 @@ class GridSupplyNode extends EnergyNode {
 
 class LoadNode extends EnergyNode {
     constructor(options) {
+        options = options || {};
         super(options);
         this.class = 'endNode';
         this.type = 'loadNode';
@@ -245,14 +249,13 @@ class LoadNode extends EnergyNode {
         this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
     }
 
-    setConstraints(data) {
-        const timeStep = data.timeStep;
+    setConstraints() {
         const state = this.getSocketByIndex(0).state;
         if (state.valueType !== "constraint") {
             return;
         }
         if (state.timeVarying) {
-            state.value = state.timeSeries[timeStep];
+            state.value = state.timeSeries[this.timeStep];
         } 
     }
 
@@ -260,6 +263,7 @@ class LoadNode extends EnergyNode {
 
 class SolarPVNode extends EnergyNode {
     constructor(options) {
+        options = options || {};
         super(options);
         this.class = 'endNode';
         this.type = 'solarPVNode';
@@ -270,14 +274,13 @@ class SolarPVNode extends EnergyNode {
         this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
     }
 
-    setConstraints(data) {
-        const timeStep = data.timeStep;
+    setConstraints() {
         const state = this.getSocketByIndex(0).state;
         if (!state.valueType === "constraint") {
             return;
         }
         if (state.timeVarying) {
-            state.value = state.timeSeries[timeStep];
+            state.value = state.timeSeries[this.timeStep];
         } 
     }
 
@@ -285,6 +288,7 @@ class SolarPVNode extends EnergyNode {
 
 class ControllerNode extends EnergyNode {
     constructor(options) {
+        options = options || {};
         super(options);
         this.class = 'controlNode';
         this.type = 'controller';
@@ -293,17 +297,14 @@ class ControllerNode extends EnergyNode {
     }
 
     setFluxTargets(){
-        //console.log("in setFluxTargets");
         const controllerInputSockets = this.inputSocketOrder.map(socketName => this.getSocketByName(socketName));
         const controllerOutputSockets = this.outputSocketOrder.map(socketName => this.getSocketByName(socketName));
         const inputConnectedSockets = controllerInputSockets.map( s => s.otherSocket);
         const outputConnectedSockets = controllerOutputSockets.map( s => s.otherSocket);
-       // console.log("inputConnectedSockets", inputConnectedSockets);
-        //console.log("outputConnectedSockets", outputConnectedSockets);
+       
         let totalInput = inputConnectedSockets.filter( s => s.state.valueType == "constraint").reduce((acc, s) => acc + s.state.value, 0);
         let totalOutput = outputConnectedSockets.filter( s => s.state.valueType == "constraint").reduce((acc, s) => acc + s.state.value, 0);
-        //console.log("totalInput", totalInput);
-        //console.log("totalOutput", totalOutput);
+        
         if (totalInput >= totalOutput){ // more supply than demand
             outputConnectedSockets.forEach( s => {
                 if (s.state.valueType == "constraint"){
@@ -373,12 +374,65 @@ class ControllerNode extends EnergyNode {
 
 }
 
+class BatteryStorageNode extends EnergyNode {
+    constructor(options) {
+        options = options || {};
+        const maxCharge = options.maxCharge || 3000;
+        const maxDischarge = options.maxDischarge || 3000;
+        const defaultInputSocket = new Socket({name: 'Input', position: 'left', state: {max: maxCharge , value:null, valueType: "variable"}});
+        const defaultOutputSocket = new Socket({name: 'Output', position: 'right', state: {max:  0, value:null, valueType: "variable"}});
+        const defaultSockets = [defaultInputSocket, defaultOutputSocket];
+        options.sockets = options.sockets || defaultSockets;
+        super(options);
+        this.state.charge = 0;
+        this.maxCharge = maxCharge;
+        this.maxDischarge = maxDischarge;
+        this.capacity = options.capacity || 5;
+        this.class = 'storageNode';
+        this.type = 'batteryStorage';
+        
+    }
+
+    updateState() {
+        const JinkWh = 1000*60*60;
+        const inputSockets = this.leftSockets;
+        const outputSockets = this.rightSockets;
+        const inputLinks = inputSockets.map( s => s.link );
+        const outputLinks = outputSockets.map( s => s.link );
+        const inputFluxes = inputLinks.map( l => l.state.value);
+        const outputFluxes = outputLinks.map( l => l.state.value);
+        const totalInputFlux = inputFluxes.reduce( (a,b) => a+b, 0);
+        const totalOutputFlux = outputFluxes.reduce( (a,b) => a+b, 0);
+        const netFluxIn = totalInputFlux - totalOutputFlux; // in W
+        const remainingCapacity = this.capacity - this.state.charge; // in kWh
+        const chargeChange = Math.min(netFluxIn*this.timeStepSize/JinkWh, remainingCapacity);
+        this.state.charge += chargeChange;
+        let maxDischarge = Math.min(this.maxDischarge, this.state.charge*JinkWh);
+        maxDischarge = Math.max(maxDischarge, 0);
+        const maxCharge = Math.min(this.maxCharge, (this.capacity - this.state.charge)*JinkWh);
+        this.getSocketByIndex(0).state.max = maxCharge;
+        this.getSocketByIndex(1).state.max = maxDischarge;
+    }
+
+}
+
 class EnergyModel extends Model {
     constructor(options) {
         super(options);
         this.timeVarying = options.timeVarying || false;
         this.timeSteps = options.timeSteps || 1;
+        this.timeStepSize = options.timeStepSize || 1.0;
         this.timeStep = 0;
+    }
+
+    setTimeStep(timeStep) {
+        this.timeStep = timeStep;
+        this.nodes.forEach( n => n.timeStep = timeStep);
+    }
+
+    setTimeStepSize(timeStepSize) {
+        this.timeStepSize = timeStepSize;
+        this.nodes.forEach( n => n.timeStepSize = timeStepSize);
     }
 
     run() {
@@ -387,17 +441,19 @@ class EnergyModel extends Model {
         const logs = this.logs;
         const timeVarying = this.timeVarying;
         const timeSteps = this.timeSteps;
+        const timeStepSize = this.timeStepSize;
+        this.setTimeStepSize(timeStepSize);
         if (!timeVarying) {
             this.timeSteps = 1;
         }
 
         for (let i = 0; i < timeSteps; i++) {
-            this.timeStep = i;
+            this.setTimeStep(i);
             // solution process:
             //     allNodes - set fixed fluxes and flux limits - e.g. constrained fluxes
             //     socket.state.fluxTarget is set
 
-            nodes.forEach(node => node.setConstraints({timeStep:i})); // needs to know time step
+            nodes.forEach(node => node.setConstraints()); // needs to know time step
 
             //     allControllerNodes - set flux targets on sockets
 
@@ -458,4 +514,4 @@ class EnergyLink extends Link {
 
 }
 
-export { ControllerNode, GridExportNode, GridSupplyNode, EnergyLink as Link, LoadNode, Log, EnergyModel as Model, Socket, SolarPVNode };
+export { BatteryStorageNode, ControllerNode, GridExportNode, GridSupplyNode, EnergyLink as Link, LoadNode, Log, EnergyModel as Model, Socket, SolarPVNode };

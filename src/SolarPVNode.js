@@ -3,6 +3,7 @@ import { Socket } from 'visual-modeller-core';
 
 class SolarPVNode extends EnergyNode {
     constructor(options) {
+        options = options || {};
         super(options);
         this.class = 'endNode';
         this.type = 'solarPVNode';
@@ -13,14 +14,13 @@ class SolarPVNode extends EnergyNode {
         this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
     }
 
-    setConstraints(data) {
-        const timeStep = data.timeStep;
+    setConstraints() {
         const state = this.getSocketByIndex(0).state;
         if (!state.valueType === "constraint") {
             return;
         }
         if (state.timeVarying) {
-            state.value = state.timeSeries[timeStep];
+            state.value = state.timeSeries[this.timeStep];
         } 
     }
 
