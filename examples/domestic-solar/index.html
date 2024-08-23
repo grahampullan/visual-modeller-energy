@@ -27,6 +27,7 @@
         import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
         import * as d3 from "https://cdn.skypack.dev/d3@7";
 
+        /*
         const npts = 24*60; // minutes in a day
         //const npts = 2;
         const time = d3.range(npts);
@@ -34,12 +35,12 @@
         const solar = time.map(d => 2000*Math.exp( -1.*((d-720)/160)**2 ));
 
 
-        const model = new Model({timeSteps: npts, timeVarying:true, timeStepSize:60 });
+        const model = new Model({config:{timeSteps: npts, timeVarying:true, timeStepSize:60 }});
         const gridSupplyNode = new GridSupplyNode();
         const loadNode = new LoadNode({socketState:{max: null, value:null, valueType:"constraint", timeVarying: true, timeSeries: load}});
         const solarNode = new SolarPVNode({socketState:{max: null, value:null, valueType:"constraint", timeVarying: true, timeSeries: solar}});
         const gridExportNode = new GridExportNode();
-        const batteryStorageNode = new BatteryStorageNode();
+        const batteryStorageNode = new BatteryStorageNode({name:"Battery Node"});
         model.addNode(gridSupplyNode);
         model.addNode(loadNode);
         model.addNode(solarNode);
@@ -52,16 +53,16 @@
         const controllerBatteryExportSocket = new Socket({name:"Battery Export cont", position:"right"});
         const controllerGridExportSocket = new Socket({name:"Grid Export cont", position:"right"});
         const controllerSockets = [controllerSolarSocket, controllerBatterySupplySocket, controllerGridSupplySocket, controllerLoadSocket, controllerBatteryExportSocket, controllerGridExportSocket];
-        const controllerNode = new ControllerNode({sockets: controllerSockets, inputSocketOrder:["Solar PV cont", "Battery Supply cont", "Grid Supply cont"], outputSocketOrder:[ "Load cont", "Battery Export cont", "Grid Export cont"]});
+        const controllerNode = new ControllerNode({sockets: controllerSockets, state:{inputSocketOrder:["Solar PV cont", "Battery Supply cont", "Grid Supply cont"], outputSocketOrder:[ "Load cont", "Battery Export cont", "Grid Export cont"]}});
         model.addNode(controllerNode);
 
 
-        const link1 = new Link({socket1: solarNode.sockets[0], socket2: controllerSolarSocket});
-        const link2 = new Link({socket1: batteryStorageNode.sockets[1], socket2: controllerBatterySupplySocket});
-        const link3 = new Link({socket1: gridSupplyNode.sockets[0], socket2: controllerGridSupplySocket});
-        const link4 = new Link({socket1: controllerLoadSocket, socket2: loadNode.sockets[0]});
-        const link5 = new Link({socket1: controllerBatteryExportSocket, socket2: batteryStorageNode.sockets[0]});
-        const link6 = new Link({socket1: controllerGridExportSocket, socket2: gridExportNode.sockets[0]});
+        const link1 = new Link({name:"solar supply link", socket1: solarNode.sockets[0], socket2: controllerSolarSocket});
+        const link2 = new Link({name:"from battery link", socket1: batteryStorageNode.sockets[1], socket2: controllerBatterySupplySocket});
+        const link3 = new Link({name:"grid supply link", socket1: gridSupplyNode.sockets[0], socket2: controllerGridSupplySocket});
+        const link4 = new Link({name:"load link", socket1: controllerLoadSocket, socket2: loadNode.sockets[0]});
+        const link5 = new Link({name:"to battery link", socket1: controllerBatteryExportSocket, socket2: batteryStorageNode.sockets[0]});
+        const link6 = new Link({name:"grid export link", socket1: controllerGridExportSocket, socket2: gridExportNode.sockets[0]});
         model.addLink(link1);
         model.addLink(link2);
         model.addLink(link3);
@@ -75,12 +76,23 @@
         model.addLog(new Log({name:"load", target:link4}));
         model.addLog(new Log({name:"to battery", target:link5}));
         model.addLog(new Log({name:"grid export", target:link6}));
+        */
+        
 
+        
+        const model = new Model();
+        await model.loadFromUrl("./domestic-solar.json");
+        console.log("model loaded");
+        console.log(model);
+        
+        const solar = model.getSocketByName("Solar PV").state.timeSeries;
 
         runAndPlot();
+        //model.saveToFile();
 
 
         function plotLogs() {
+            const time = d3.range(model.config.timeSteps);
             const plotData = time.map((t,i) => {
                 const obj = {time: t};
                 model.logs.forEach(l => {
@@ -112,25 +124,28 @@
 
         d3.select("#solar-slider").on("input", function() {
             const value = this.value;
-            solarNode.sockets[0].state.timeSeries = solar.map(s => s*value);
+            model.getSocketByName("Solar PV").state.timeSeries = solar.map(s => s*value);
             runAndPlot();
         });
 
+        
         d3.select("#batt-capacity-slider").on("input", function() {
             const value = this.value;
-            batteryStorageNode.capacity = value;
+            const state = model.getNodeByName("Battery Node").state;
+            state.capacity = value;
             runAndPlot();
         });
 
         d3.select("#batt-max-charge-slider").on("input", function() {
             const value = this.value;
-            batteryStorageNode.maxCharge = value;
-            batteryStorageNode.maxDischarge = value;
+            const state = model.getNodeByName("Battery Node").state;
+            state.maxCharge = value;
+            state.maxDischarge = value;
             runAndPlot();
         });
 
         function runAndPlot() {
-            batteryStorageNode.state.charge = 0;
+            model.getNodeByName("Battery Node").state.charge = 0;
             model.clearLogs();
             model.run();
             plotLogs();

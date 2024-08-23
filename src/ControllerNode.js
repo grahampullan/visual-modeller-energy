@@ -6,13 +6,13 @@ class ControllerNode extends EnergyNode {
         super(options);
         this.class = 'controllerNode';
         this.type = 'controllerNode';
-        this.inputSocketOrder = options.inputSocketOrder || []; // array of socket names
-        this.outputSocketOrder = options.outputSocketOrder || [];
     }
 
     setFluxTargets(){
-        const controllerInputSockets = this.inputSocketOrder.map(socketName => this.getSocketByName(socketName));
-        const controllerOutputSockets = this.outputSocketOrder.map(socketName => this.getSocketByName(socketName));
+        const inputSocketOrder = this.state.inputSocketOrder;
+        const outputSocketOrder = this.state.outputSocketOrder;
+        const controllerInputSockets = inputSocketOrder.map(socketName => this.getSocketByName(socketName));
+        const controllerOutputSockets = outputSocketOrder.map(socketName => this.getSocketByName(socketName));
         const inputConnectedSockets = controllerInputSockets.map( s => s.otherSocket);
         const outputConnectedSockets = controllerOutputSockets.map( s => s.otherSocket);
        

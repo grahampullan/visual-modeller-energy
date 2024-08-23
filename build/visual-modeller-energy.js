@@ -1,5 +1,30 @@
+class Socket {
+    constructor(options) {
+        this.name = options.name || 'socket';
+        this.state = options.state || {};
+        this.position = options.position || 'left';  
+    }
+}
+
+class Log {
+    constructor(options) {
+        this.name = options.name || 'log';
+        this.target = options.target || null;
+        this.states = [];
+    }
+
+    writeToLog() {
+        this.states.push({...this.target.state});
+    }
+
+    clear() {
+        this.states = [];
+    }
+}
+
 class Model {
     constructor(options) {
+        options = options || {};
         this.nodes = options.nodes || [];
         this.links = options.links || [];
         this.logs = options.logs || [];
@@ -82,6 +107,155 @@ class Model {
     getNodeBySocket(socket) {
         return this.nodes.find(n => n.sockets.includes(socket));
     }
+
+    getNodeByName(name) {
+        return this.nodes.find(n => n.name === name);
+    }
+
+    getLinkByName(name) {
+        return this.links.find(l => l.name === name);
+    }
+
+    getNodeClassByClassName(className) {
+        if (!this.availableNodeClasses) {
+            return null;
+        }
+        const availableNodeClassNames = this.availableNodeClasses.map(c => {
+            const instance = new c();
+            return instance.className;
+        });
+        const index = availableNodeClassNames.indexOf(className);
+        if (index === -1) {
+            return null;
+        } else {
+            return this.availableNodeClasses[index];
+        }   
+    }
+
+    getLinkClassByClassName(className) {
+        if (!this.availableLinkClasses) {
+            return null;
+        }
+        if (this.availableLinkClasses.length === 1) {
+            return this.availableLinkClasses[0];
+        }
+        const availableLinkClassNames = this.availableLinkClasses.map(c => {
+            const instance = new c();
+            return instance.className;
+        });
+        const index = availableLinkClassNames.indexOf(className);
+        if (index === -1) {
+            return null;
+        } else {
+            return this.availableLinkClasses[index];
+        }   
+    }
+
+    get allSockets() {
+        return this.nodes.map(n => n.sockets).flat();
+    }
+
+    getSocketByName(socketName) {
+        console.log(this.allSockets.map(s => s.name));
+        console.log(socketName);
+        return this.allSockets.find(s => s.name == socketName);
+    }
+
+    toJson() {
+        const modelForJson = {};
+        modelForJson.config = this.config;
+        modelForJson.nodes = this.nodes.map(n => {
+            const nJson = {};
+            nJson.name = n.name;
+            nJson.className = n.className;
+            nJson.state = n.state;
+            nJson.sockets = n.sockets.map(s => {
+                const sJson = {};
+                sJson.name = s.name;
+                sJson.position = s.position;
+                sJson.state = s.state;
+                return sJson;
+            });
+            return nJson;
+        });
+        modelForJson.links = this.links.map(l => {
+            const lJson = {};
+            lJson.name = l.name;
+            lJson.socket1Name = l.socket1.name;
+            lJson.socket2Name = l.socket2.name;
+            return lJson;
+        });
+        modelForJson.logs = this.logs.map(l => {
+            const lJson = {};
+            lJson.name = l.name;
+            lJson.targetName = l.target.name;
+            return lJson;
+        });
+        return JSON.stringify(modelForJson);
+    }
+
+    saveToFile() {
+        const modelJson = this.toJson();
+        const blob = new Blob([modelJson], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'model.json';
+        a.click();
+    }
+
+    fromJsonObject(jsonModel) {
+        console.log(jsonModel);
+        this.config = jsonModel.config;
+        jsonModel.nodes.forEach(n => {
+            const NodeClass = this.getNodeClassByClassName(n.className);
+            const node = new NodeClass(n);
+            node.sockets = n.sockets.map(s => new Socket(s));
+            console.log(node);
+            this.addNode(node);
+        });
+        console.log("nodes added");
+        jsonModel.links.forEach(l => {
+            console.log(l);
+            const socket1 = this.getSocketByName(l.socket1Name);
+            const socket2 = this.getSocketByName(l.socket2Name);
+            console.log(socket1, socket2);
+            let LinkClass;
+            if (!l.className) {
+                LinkClass = this.getLinkClassByClassName();
+            } else {
+                LinkClass = this.getLinkClassByClassName(l.className);
+            }
+            console.log(LinkClass);
+            console.log(this.availableLinkClasses);
+            this.addLink(new LinkClass({name:l.name, socket1, socket2}));
+            console.log("link added");
+        });
+        console.log("links added");
+        jsonModel.logs.forEach(l => {
+            console.log(l);
+            const targetNode = this.getNodeByName(l.targetName);
+            const targetLink = this.getLinkByName(l.targetName);
+            console.log(targetNode, targetLink);
+            const target = targetNode || targetLink;
+            console.log(target);
+            this.addLog(new Log({name:l.name, target}));
+        });
+        console.log("logs added");
+
+
+
+    }
+
+    async loadFromUrl(url) {
+        const response = await fetch(url);
+        const json = await response.json();
+        this.fromJsonObject(json);
+    }
+
+
+
+
 }
 
 class Node {
@@ -151,16 +325,10 @@ class Node {
 
 }
 
-class Socket {
-    constructor(options) {
-        this.name = options.name || 'socket';
-        this.state = options.state || {};
-        this.position = options.position || 'left';  
-    }
-}
-
 class Link {
     constructor(options) {
+        options = options || {};
+        this.name = options.name || "link";
         this.socket1 = options.socket1 || null;
         this.socket2 = options.socket2 || null;
         this.state = options.state || {};
@@ -174,22 +342,6 @@ class Link {
         } else {
             return null;
         }
-    }
-}
-
-class Log {
-    constructor(options) {
-        this.name = options.name || 'log';
-        this.target = options.target || null;
-        this.states = [];
-    }
-
-    writeToLog() {
-        this.states.push({...this.target.state});
-    }
-
-    clear() {
-        this.states = [];
     }
 }
 
@@ -292,13 +444,13 @@ class ControllerNode extends EnergyNode {
         super(options);
         this.class = 'controllerNode';
         this.type = 'controllerNode';
-        this.inputSocketOrder = options.inputSocketOrder || []; // array of socket names
-        this.outputSocketOrder = options.outputSocketOrder || [];
     }
 
     setFluxTargets(){
-        const controllerInputSockets = this.inputSocketOrder.map(socketName => this.getSocketByName(socketName));
-        const controllerOutputSockets = this.outputSocketOrder.map(socketName => this.getSocketByName(socketName));
+        const inputSocketOrder = this.state.inputSocketOrder;
+        const outputSocketOrder = this.state.outputSocketOrder;
+        const controllerInputSockets = inputSocketOrder.map(socketName => this.getSocketByName(socketName));
+        const controllerOutputSockets = outputSocketOrder.map(socketName => this.getSocketByName(socketName));
         const inputConnectedSockets = controllerInputSockets.map( s => s.otherSocket);
         const outputConnectedSockets = controllerOutputSockets.map( s => s.otherSocket);
        
@@ -377,20 +529,18 @@ class ControllerNode extends EnergyNode {
 class BatteryStorageNode extends EnergyNode {
     constructor(options) {
         options = options || {};
-        const maxCharge = options.maxCharge || 3000;
-        const maxDischarge = options.maxDischarge || 3000;
-        const defaultInputSocket = new Socket({name: 'Input', position: 'left', state: {max: maxCharge , value:null, valueType: "variable"}});
-        const defaultOutputSocket = new Socket({name: 'Output', position: 'right', state: {max:  0, value:null, valueType: "variable"}});
+        options.state = options.state || {};
+        options.state.maxCharge = options.state.maxCharge || 3000;
+        options.state.maxDischarge = options.state.maxDischarge || 3000;
+        const defaultInputSocket = new Socket({name: 'Input', position: 'left', state: {max: options.state.maxCharge, value:null, valueType: "variable"}});
+        const defaultOutputSocket = new Socket({name: 'Output', position: 'right', state: {max:  options.state.maxDischarge, value:null, valueType: "variable"}});
         const defaultSockets = [defaultInputSocket, defaultOutputSocket];
         options.sockets = options.sockets || defaultSockets;
+        options.state.capacity = options.state.capacity || 5;
         super(options);
         this.state.charge = 0;
-        this.maxCharge = maxCharge;
-        this.maxDischarge = maxDischarge;
-        this.capacity = options.capacity || 5;
         this.className = 'batteryStorageNode';
         this.type = 'storageNode';
-        
     }
 
     updateState() {
@@ -404,77 +554,16 @@ class BatteryStorageNode extends EnergyNode {
         const totalInputFlux = inputFluxes.reduce( (a,b) => a+b, 0);
         const totalOutputFlux = outputFluxes.reduce( (a,b) => a+b, 0);
         const netFluxIn = totalInputFlux - totalOutputFlux; // in W
-        const remainingCapacity = this.capacity - this.state.charge; // in kWh
+        const remainingCapacity = this.state.capacity - this.state.charge; // in kWh
         const chargeChange = Math.min(netFluxIn*this.timeStepSize/JinkWh, remainingCapacity);
         this.state.charge += chargeChange;
-        let maxDischarge = Math.min(this.maxDischarge, this.state.charge*JinkWh);
+        let maxDischarge = Math.min(this.state.maxDischarge, this.state.charge*JinkWh);
         maxDischarge = Math.max(maxDischarge, 0);
-        const maxCharge = Math.min(this.maxCharge, (this.capacity - this.state.charge)*JinkWh);
+        const maxCharge = Math.min(this.state.maxCharge, (this.state.capacity - this.state.charge)*JinkWh);
         this.getSocketByIndex(0).state.max = maxCharge;
         this.getSocketByIndex(1).state.max = maxDischarge;
     }
 
-}
-
-class EnergyModel extends Model {
-    constructor(options) {
-        super(options);
-        this.timeVarying = options.timeVarying || false;
-        this.timeSteps = options.timeSteps || 1;
-        this.timeStepSize = options.timeStepSize || 1.0;
-        this.timeStep = 0;
-    }
-
-    setTimeStep(timeStep) {
-        this.timeStep = timeStep;
-        this.nodes.forEach( n => n.timeStep = timeStep);
-    }
-
-    setTimeStepSize(timeStepSize) {
-        this.timeStepSize = timeStepSize;
-        this.nodes.forEach( n => n.timeStepSize = timeStepSize);
-    }
-
-    run() {
-        const nodes = this.nodes;
-        const links = this.links;
-        const logs = this.logs;
-        const timeVarying = this.timeVarying;
-        const timeSteps = this.timeSteps;
-        const timeStepSize = this.timeStepSize;
-        this.setTimeStepSize(timeStepSize);
-        if (!timeVarying) {
-            this.timeSteps = 1;
-        }
-
-        for (let i = 0; i < timeSteps; i++) {
-            this.setTimeStep(i);
-            // solution process:
-            //     allNodes - set fixed fluxes and flux limits - e.g. constrained fluxes
-            //     socket.state.fluxTarget is set
-
-            nodes.forEach(node => node.setConstraints()); // needs to know time step
-
-            //     allControllerNodes - set flux targets on sockets
-
-            nodes.filter(node => node.type === 'controllerNode').forEach(controllerNode => controllerNode.setFluxTargets());
-
-            //     allLinks - set fluxes using targets
-
-            links.forEach(link => link.setFlux());
-
-            //     allNodes - update state given current fluxes (e.g. battery)
-
-            nodes.forEach(node => node.updateState());
-
-            //    finally update logs
-            //    logs is array of objects {"name", [values]}
-
-            logs.forEach( log => log.writeToLog());
-            
-        }
-
-    }
 }
 
 class EnergyLink extends Link {
@@ -512,6 +601,86 @@ class EnergyLink extends Link {
 
     }
 
+}
+
+class EnergyModel extends Model {
+    constructor(options) {
+        options = options || {};
+        super(options);
+        const configOptions = options.config || {};
+        const config = {};
+        config.timeVarying = configOptions.timeVarying || false;
+        config.timeSteps = configOptions.timeSteps || 1;
+        config.timeStepSize = configOptions.timeStepSize || 1.0;
+        this.config = config;
+        this.timeStep = 0;
+    }
+
+    get availableNodeClasses() {
+        return [BatteryStorageNode, ControllerNode, GridExportNode, GridSupplyNode, LoadNode, SolarPVNode]; 
+    }
+
+    get availableLinkClasses() {
+        return [EnergyLink];
+    }
+
+    setTimeStep(timeStep) {
+        this.timeStep = timeStep;
+        this.nodes.forEach( n => n.timeStep = timeStep);
+    }
+
+    setTimeStepSize(timeStepSize) {
+        this.config.timeStepSize = timeStepSize;
+        this.nodes.forEach( n => n.timeStepSize = timeStepSize);
+    }
+
+    run() {
+        const nodes = this.nodes;
+        const links = this.links;
+        const logs = this.logs;
+        const timeVarying = this.config.timeVarying;
+        const timeSteps = this.config.timeSteps;
+        const timeStepSize = this.config.timeStepSize;
+        this.setTimeStepSize(timeStepSize);
+        if (!timeVarying) {
+            this.timeSteps = 1;
+        }
+
+
+        for (let i = 0; i < timeSteps; i++) {
+            this.setTimeStep(i);
+            // solution process:
+            //     allNodes - set fixed fluxes and flux limits - e.g. constrained fluxes
+            //     socket.state.fluxTarget is set
+
+            nodes.forEach(node => node.setConstraints()); // needs to know time step
+            //console.log("constraints set");
+
+            //     allControllerNodes - set flux targets on sockets
+
+            nodes.filter(node => node.type === 'controllerNode').forEach(controllerNode => controllerNode.setFluxTargets());
+            //console.log("flux targets set");
+            //console.log(links);
+
+            //     allLinks - set fluxes using targets
+
+            links.forEach(link => link.setFlux());
+            //console.log("fluxes set");
+
+            //     allNodes - update state given current fluxes (e.g. battery)
+
+            nodes.forEach(node => node.updateState());
+            //console.log("states updated");
+
+            //    finally update logs
+            //    logs is array of objects {"name", [values]}
+
+            logs.forEach( log => log.writeToLog());
+            //console.log("logs written");
+            
+        }
+
+    }
 }
 
 export { BatteryStorageNode, ControllerNode, GridExportNode, GridSupplyNode, EnergyLink as Link, LoadNode, Log, EnergyModel as Model, Socket, SolarPVNode };

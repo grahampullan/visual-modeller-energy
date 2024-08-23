@@ -4,20 +4,18 @@ import { Socket } from 'visual-modeller-core';
 class BatteryStorageNode extends EnergyNode {
     constructor(options) {
         options = options || {};
-        const maxCharge = options.maxCharge || 3000;
-        const maxDischarge = options.maxDischarge || 3000;
-        const defaultInputSocket = new Socket({name: 'Input', position: 'left', state: {max: maxCharge , value:null, valueType: "variable"}});
-        const defaultOutputSocket = new Socket({name: 'Output', position: 'right', state: {max:  0, value:null, valueType: "variable"}});
+        options.state = options.state || {};
+        options.state.maxCharge = options.state.maxCharge || 3000;
+        options.state.maxDischarge = options.state.maxDischarge || 3000;
+        const defaultInputSocket = new Socket({name: 'Input', position: 'left', state: {max: options.state.maxCharge, value:null, valueType: "variable"}});
+        const defaultOutputSocket = new Socket({name: 'Output', position: 'right', state: {max:  options.state.maxDischarge, value:null, valueType: "variable"}});
         const defaultSockets = [defaultInputSocket, defaultOutputSocket];
         options.sockets = options.sockets || defaultSockets;
+        options.state.capacity = options.state.capacity || 5;
         super(options);
         this.state.charge = 0;
-        this.maxCharge = maxCharge;
-        this.maxDischarge = maxDischarge;
-        this.capacity = options.capacity || 5;
         this.className = 'batteryStorageNode';
         this.type = 'storageNode';
-        
     }
 
     updateState() {
@@ -31,12 +29,12 @@ class BatteryStorageNode extends EnergyNode {
         const totalInputFlux = inputFluxes.reduce( (a,b) => a+b, 0);
         const totalOutputFlux = outputFluxes.reduce( (a,b) => a+b, 0);
         const netFluxIn = totalInputFlux - totalOutputFlux; // in W
-        const remainingCapacity = this.capacity - this.state.charge; // in kWh
+        const remainingCapacity = this.state.capacity - this.state.charge; // in kWh
         const chargeChange = Math.min(netFluxIn*this.timeStepSize/JinkWh, remainingCapacity);
         this.state.charge += chargeChange;
-        let maxDischarge = Math.min(this.maxDischarge, this.state.charge*JinkWh);
+        let maxDischarge = Math.min(this.state.maxDischarge, this.state.charge*JinkWh);
         maxDischarge = Math.max(maxDischarge, 0);
-        const maxCharge = Math.min(this.maxCharge, (this.capacity - this.state.charge)*JinkWh);
+        const maxCharge = Math.min(this.state.maxCharge, (this.state.capacity - this.state.charge)*JinkWh);
         this.getSocketByIndex(0).state.max = maxCharge;
         this.getSocketByIndex(1).state.max = maxDischarge;
     }
