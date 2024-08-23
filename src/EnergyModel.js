@@ -41,7 +41,7 @@ class EnergyModel extends Model {
 
             //     allControllerNodes - set flux targets on sockets
 
-            nodes.filter(node => node.type === 'controller').forEach(controllerNode => controllerNode.setFluxTargets());
+            nodes.filter(node => node.type === 'controllerNode').forEach(controllerNode => controllerNode.setFluxTargets());
 
             //     allLinks - set fluxes using targets
 

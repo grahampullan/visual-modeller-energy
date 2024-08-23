@@ -5,8 +5,8 @@ class GridExportNode extends EnergyNode {
     constructor(options) {
         options = options || {};
         super(options);
-        this.class = 'endNode';
-        this.type = 'gridExport';
+        this.className = 'gridExportNode';
+        this.type = 'endNode';
         const socketOptions = {};
         socketOptions.name = options.socketName || 'Grid Export';
         socketOptions.position = options.position || 'left';

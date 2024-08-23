@@ -4,8 +4,8 @@ class ControllerNode extends EnergyNode {
     constructor(options) {
         options = options || {};
         super(options);
-        this.class = 'controlNode';
-        this.type = 'controller';
+        this.class = 'controllerNode';
+        this.type = 'controllerNode';
         this.inputSocketOrder = options.inputSocketOrder || []; // array of socket names
         this.outputSocketOrder = options.outputSocketOrder || [];
     }

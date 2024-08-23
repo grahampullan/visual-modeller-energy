@@ -15,8 +15,8 @@ class BatteryStorageNode extends EnergyNode {
         this.maxCharge = maxCharge;
         this.maxDischarge = maxDischarge;
         this.capacity = options.capacity || 5;
-        this.class = 'storageNode';
-        this.type = 'batteryStorage';
+        this.className = 'batteryStorageNode';
+        this.type = 'storageNode';
         
     }
 

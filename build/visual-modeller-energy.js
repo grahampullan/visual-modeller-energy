@@ -212,8 +212,8 @@ class GridExportNode extends EnergyNode {
     constructor(options) {
         options = options || {};
         super(options);
-        this.class = 'endNode';
-        this.type = 'gridExport';
+        this.className = 'gridExportNode';
+        this.type = 'endNode';
         const socketOptions = {};
         socketOptions.name = options.socketName || 'Grid Export';
         socketOptions.position = options.position || 'left';
@@ -226,8 +226,8 @@ class GridSupplyNode extends EnergyNode {
     constructor(options) {
         options = options || {};
         super(options);
-        this.class = 'endNode';
-        this.type = 'gridSupply';
+        this.className = 'gridSupplyNode';
+        this.type = 'endNode';
         const socketOptions = {};
         socketOptions.name = options.socketName || 'Grid Supply';
         socketOptions.position = options.position || 'right'; // output on right side
@@ -240,8 +240,8 @@ class LoadNode extends EnergyNode {
     constructor(options) {
         options = options || {};
         super(options);
-        this.class = 'endNode';
-        this.type = 'loadNode';
+        this.className = 'loadNode';
+        this.type = 'endNode';
         const socketOptions = {};
         socketOptions.name = options.socketName || 'Load';
         socketOptions.position = options.position || 'left'; // input on left side
@@ -265,8 +265,8 @@ class SolarPVNode extends EnergyNode {
     constructor(options) {
         options = options || {};
         super(options);
-        this.class = 'endNode';
-        this.type = 'solarPVNode';
+        this.className = 'solarPVNode';
+        this.type = 'endNode';
         const socketOptions = {};
         socketOptions.name = options.socketName || 'Solar PV';
         socketOptions.position = options.position || 'right'; // output on right side
@@ -290,8 +290,8 @@ class ControllerNode extends EnergyNode {
     constructor(options) {
         options = options || {};
         super(options);
-        this.class = 'controlNode';
-        this.type = 'controller';
+        this.class = 'controllerNode';
+        this.type = 'controllerNode';
         this.inputSocketOrder = options.inputSocketOrder || []; // array of socket names
         this.outputSocketOrder = options.outputSocketOrder || [];
     }
@@ -388,8 +388,8 @@ class BatteryStorageNode extends EnergyNode {
         this.maxCharge = maxCharge;
         this.maxDischarge = maxDischarge;
         this.capacity = options.capacity || 5;
-        this.class = 'storageNode';
-        this.type = 'batteryStorage';
+        this.className = 'batteryStorageNode';
+        this.type = 'storageNode';
         
     }
 
@@ -457,7 +457,7 @@ class EnergyModel extends Model {
 
             //     allControllerNodes - set flux targets on sockets
 
-            nodes.filter(node => node.type === 'controller').forEach(controllerNode => controllerNode.setFluxTargets());
+            nodes.filter(node => node.type === 'controllerNode').forEach(controllerNode => controllerNode.setFluxTargets());
 
             //     allLinks - set fluxes using targets
 

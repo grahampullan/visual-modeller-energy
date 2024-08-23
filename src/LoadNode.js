@@ -5,8 +5,8 @@ class LoadNode extends EnergyNode {
     constructor(options) {
         options = options || {};
         super(options);
-        this.class = 'endNode';
-        this.type = 'loadNode';
+        this.className = 'loadNode';
+        this.type = 'endNode';
         const socketOptions = {};
         socketOptions.name = options.socketName || 'Load';
         socketOptions.position = options.position || 'left'; // input on left side

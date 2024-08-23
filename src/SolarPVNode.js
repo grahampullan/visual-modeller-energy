@@ -5,8 +5,8 @@ class SolarPVNode extends EnergyNode {
     constructor(options) {
         options = options || {};
         super(options);
-        this.class = 'endNode';
-        this.type = 'solarPVNode';
+        this.className = 'solarPVNode';
+        this.type = 'endNode';
         const socketOptions = {};
         socketOptions.name = options.socketName || 'Solar PV';
         socketOptions.position = options.position || 'right'; // output on right side
