@@ -3,16 +3,20 @@ import { EnergyNode } from "./EnergyNode";
 class ControllerNode extends EnergyNode {
     constructor(options) {
         options = options || {};
+        options.className = 'controllerNode';
         super(options);
-        this.class = 'controllerNode';
+        if (options.inputSocketOrder){
+            this.setSocketOrderByName({position: 'left', order:options.inputSocketOrder});
+        }
+        if (options.outputSocketOrder){
+            this.setSocketOrderByName({position: 'right', order:options.outputSocketOrder});
+        }
         this.type = 'controllerNode';
     }
 
     setFluxTargets(){
-        const inputSocketOrder = this.state.inputSocketOrder;
-        const outputSocketOrder = this.state.outputSocketOrder;
-        const controllerInputSockets = inputSocketOrder.map(socketName => this.getSocketByName(socketName));
-        const controllerOutputSockets = outputSocketOrder.map(socketName => this.getSocketByName(socketName));
+        const controllerInputSockets = this.leftSockets;
+        const controllerOutputSockets = this.rightSockets;
         const inputConnectedSockets = controllerInputSockets.map( s => s.otherSocket);
         const outputConnectedSockets = controllerOutputSockets.map( s => s.otherSocket);
        

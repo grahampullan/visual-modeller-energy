@@ -53,7 +53,7 @@
         const controllerBatteryExportSocket = new Socket({name:"Battery Export cont", position:"right"});
         const controllerGridExportSocket = new Socket({name:"Grid Export cont", position:"right"});
         const controllerSockets = [controllerSolarSocket, controllerBatterySupplySocket, controllerGridSupplySocket, controllerLoadSocket, controllerBatteryExportSocket, controllerGridExportSocket];
-        const controllerNode = new ControllerNode({sockets: controllerSockets, state:{inputSocketOrder:["Solar PV cont", "Battery Supply cont", "Grid Supply cont"], outputSocketOrder:[ "Load cont", "Battery Export cont", "Grid Export cont"]}});
+        const controllerNode = new ControllerNode({sockets: controllerSockets, inputSocketOrder:["Solar PV cont", "Battery Supply cont", "Grid Supply cont"], outputSocketOrder:[ "Load cont", "Battery Export cont", "Grid Export cont"]});
         model.addNode(controllerNode);
 
 
@@ -78,12 +78,12 @@
         model.addLog(new Log({name:"grid export", target:link6}));
         */
         
-
         
         const model = new Model();
         await model.loadFromUrl("./domestic-solar.json");
         console.log("model loaded");
         console.log(model);
+
         
         const solar = model.getSocketByName("Solar PV").state.timeSeries;
 

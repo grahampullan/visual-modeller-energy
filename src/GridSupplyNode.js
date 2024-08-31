@@ -4,8 +4,8 @@ import { Socket } from 'visual-modeller-core';
 class GridSupplyNode extends EnergyNode {
     constructor(options) {
         options = options || {};
+        options.className = 'gridSupplyNode';
         super(options);
-        this.className = 'gridSupplyNode';
         this.type = 'endNode';
         const socketOptions = {};
         socketOptions.name = options.socketName || 'Grid Supply';

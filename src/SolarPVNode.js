@@ -4,8 +4,8 @@ import { Socket } from 'visual-modeller-core';
 class SolarPVNode extends EnergyNode {
     constructor(options) {
         options = options || {};
+        options.className = 'solarPVNode';
         super(options);
-        this.className = 'solarPVNode';
         this.type = 'endNode';
         const socketOptions = {};
         socketOptions.name = options.socketName || 'Solar PV';

@@ -12,9 +12,9 @@ class BatteryStorageNode extends EnergyNode {
         const defaultSockets = [defaultInputSocket, defaultOutputSocket];
         options.sockets = options.sockets || defaultSockets;
         options.state.capacity = options.state.capacity || 5;
+        options.className = 'batteryStorageNode';
         super(options);
         this.state.charge = 0;
-        this.className = 'batteryStorageNode';
         this.type = 'storageNode';
     }
 
