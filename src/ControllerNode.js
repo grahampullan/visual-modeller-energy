@@ -12,6 +12,7 @@ class ControllerNode extends EnergyNode {
             this.setSocketOrderByName({position: 'right', order:options.outputSocketOrder});
         }
         this.type = 'controllerNode';
+        this.displayConfig.colorIndex = 1;
     }
 
     setFluxTargets(){

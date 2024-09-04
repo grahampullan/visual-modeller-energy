@@ -12,6 +12,7 @@ class SolarPVNode extends EnergyNode {
         socketOptions.position = options.position || 'right'; // output on right side
         socketOptions.state = options.socketState || {max: null, value:null, valueType: "constraint", timeVarying: false, timeSeries: null};
         this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
+        this.displayConfig.colorIndex = 5;
     }
 
     setConstraints() {

@@ -16,6 +16,7 @@ class BatteryStorageNode extends EnergyNode {
         super(options);
         this.state.charge = 0;
         this.type = 'storageNode';
+        this.displayConfig.colorIndex = 6;
     }
 
     updateState() {

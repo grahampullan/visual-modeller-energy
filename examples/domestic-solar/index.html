@@ -3,10 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
-
+    <!--
     <input type="range" id="solar-slider" min="0" max="2" value="1" step="any">
     <label for="solar-slider">Solar PV output</label>
 
@@ -14,12 +15,14 @@
     <label for="batt-capacity-slider">Battery capacity</label>
 
     <input type="range" id="batt-max-charge-slider" min="1000" max="10000" value="3000" step="any">
-    <label for="batt-max-charge-slider">Battery max charge / discharge</label>
+    <label for="batt-max-charge-slider">Battery max charge / discharge</label> -->
+
+    <div id="target"></div>
 
 
 
 
-    <div id = "plot-target"></div>
+    <!-- <div id = "plot-target"></div> -->
 
     <script type="module">
 
@@ -84,7 +87,11 @@
         console.log("model loaded");
         console.log(model);
 
-        
+        console.log("starting vis");
+        model.startVis()
+        console.log("vis started");
+
+        /*
         const solar = model.getSocketByName("Solar PV").state.timeSeries;
 
         runAndPlot();
@@ -150,7 +157,7 @@
             model.run();
             plotLogs();
         }
-
+        */
 
 
     </script>

@@ -23,55 +23,55 @@ class Log {
     }
 }
 
-var xhtml = "http://www.w3.org/1999/xhtml";
+var xhtml$1 = "http://www.w3.org/1999/xhtml";
 
-var namespaces = {
+var namespaces$1 = {
   svg: "http://www.w3.org/2000/svg",
-  xhtml: xhtml,
+  xhtml: xhtml$1,
   xlink: "http://www.w3.org/1999/xlink",
   xml: "http://www.w3.org/XML/1998/namespace",
   xmlns: "http://www.w3.org/2000/xmlns/"
 };
 
-function namespace(name) {
+function namespace$1(name) {
   var prefix = name += "", i = prefix.indexOf(":");
   if (i >= 0 && (prefix = name.slice(0, i)) !== "xmlns") name = name.slice(i + 1);
-  return namespaces.hasOwnProperty(prefix) ? {space: namespaces[prefix], local: name} : name; // eslint-disable-line no-prototype-builtins
+  return namespaces$1.hasOwnProperty(prefix) ? {space: namespaces$1[prefix], local: name} : name; // eslint-disable-line no-prototype-builtins
 }
 
-function creatorInherit(name) {
+function creatorInherit$1(name) {
   return function() {
     var document = this.ownerDocument,
         uri = this.namespaceURI;
-    return uri === xhtml && document.documentElement.namespaceURI === xhtml
+    return uri === xhtml$1 && document.documentElement.namespaceURI === xhtml$1
         ? document.createElement(name)
         : document.createElementNS(uri, name);
   };
 }
 
-function creatorFixed(fullname) {
+function creatorFixed$1(fullname) {
   return function() {
     return this.ownerDocument.createElementNS(fullname.space, fullname.local);
   };
 }
 
-function creator(name) {
-  var fullname = namespace(name);
+function creator$1(name) {
+  var fullname = namespace$1(name);
   return (fullname.local
-      ? creatorFixed
-      : creatorInherit)(fullname);
+      ? creatorFixed$1
+      : creatorInherit$1)(fullname);
 }
 
-function none() {}
+function none$1() {}
 
-function selector(selector) {
-  return selector == null ? none : function() {
+function selector$1(selector) {
+  return selector == null ? none$1 : function() {
     return this.querySelector(selector);
   };
 }
 
-function selection_select(select) {
-  if (typeof select !== "function") select = selector(select);
+function selection_select$1(select) {
+  if (typeof select !== "function") select = selector$1(select);
 
   for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, subgroup = subgroups[j] = new Array(n), node, subnode, i = 0; i < n; ++i) {
@@ -91,29 +91,29 @@ function selection_select(select) {
 // selection; we don’t ever want to create a selection backed by a live
 // HTMLCollection or NodeList. However, note that selection.selectAll will use a
 // static NodeList as a group, since it safely derived from querySelectorAll.
-function array(x) {
+function array$1(x) {
   return x == null ? [] : Array.isArray(x) ? x : Array.from(x);
 }
 
-function empty() {
+function empty$1() {
   return [];
 }
 
-function selectorAll(selector) {
-  return selector == null ? empty : function() {
+function selectorAll$1(selector) {
+  return selector == null ? empty$1 : function() {
     return this.querySelectorAll(selector);
   };
 }
 
-function arrayAll(select) {
+function arrayAll$1(select) {
   return function() {
-    return array(select.apply(this, arguments));
+    return array$1(select.apply(this, arguments));
   };
 }
 
-function selection_selectAll(select) {
-  if (typeof select === "function") select = arrayAll(select);
-  else select = selectorAll(select);
+function selection_selectAll$1(select) {
+  if (typeof select === "function") select = arrayAll$1(select);
+  else select = selectorAll$1(select);
 
   for (var groups = this._groups, m = groups.length, subgroups = [], parents = [], j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, node, i = 0; i < n; ++i) {
@@ -127,54 +127,54 @@ function selection_selectAll(select) {
   return new Selection$1(subgroups, parents);
 }
 
-function matcher(selector) {
+function matcher$1(selector) {
   return function() {
     return this.matches(selector);
   };
 }
 
-function childMatcher(selector) {
+function childMatcher$1(selector) {
   return function(node) {
     return node.matches(selector);
   };
 }
 
-var find = Array.prototype.find;
+var find$1 = Array.prototype.find;
 
-function childFind(match) {
+function childFind$1(match) {
   return function() {
-    return find.call(this.children, match);
+    return find$1.call(this.children, match);
   };
 }
 
-function childFirst() {
+function childFirst$1() {
   return this.firstElementChild;
 }
 
-function selection_selectChild(match) {
-  return this.select(match == null ? childFirst
-      : childFind(typeof match === "function" ? match : childMatcher(match)));
+function selection_selectChild$1(match) {
+  return this.select(match == null ? childFirst$1
+      : childFind$1(typeof match === "function" ? match : childMatcher$1(match)));
 }
 
-var filter = Array.prototype.filter;
+var filter$1 = Array.prototype.filter;
 
-function children() {
+function children$1() {
   return Array.from(this.children);
 }
 
-function childrenFilter(match) {
+function childrenFilter$1(match) {
   return function() {
-    return filter.call(this.children, match);
+    return filter$1.call(this.children, match);
   };
 }
 
-function selection_selectChildren(match) {
-  return this.selectAll(match == null ? children
-      : childrenFilter(typeof match === "function" ? match : childMatcher(match)));
+function selection_selectChildren$1(match) {
+  return this.selectAll(match == null ? children$1
+      : childrenFilter$1(typeof match === "function" ? match : childMatcher$1(match)));
 }
 
-function selection_filter(match) {
-  if (typeof match !== "function") match = matcher(match);
+function selection_filter$1(match) {
+  if (typeof match !== "function") match = matcher$1(match);
 
   for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, subgroup = subgroups[j] = [], node, i = 0; i < n; ++i) {
@@ -187,15 +187,15 @@ function selection_filter(match) {
   return new Selection$1(subgroups, this._parents);
 }
 
-function sparse(update) {
+function sparse$1(update) {
   return new Array(update.length);
 }
 
-function selection_enter() {
-  return new Selection$1(this._enter || this._groups.map(sparse), this._parents);
+function selection_enter$1() {
+  return new Selection$1(this._enter || this._groups.map(sparse$1), this._parents);
 }
 
-function EnterNode(parent, datum) {
+function EnterNode$1(parent, datum) {
   this.ownerDocument = parent.ownerDocument;
   this.namespaceURI = parent.namespaceURI;
   this._next = null;
@@ -203,8 +203,8 @@ function EnterNode(parent, datum) {
   this.__data__ = datum;
 }
 
-EnterNode.prototype = {
-  constructor: EnterNode,
+EnterNode$1.prototype = {
+  constructor: EnterNode$1,
   appendChild: function(child) { return this._parent.insertBefore(child, this._next); },
   insertBefore: function(child, next) { return this._parent.insertBefore(child, next); },
   querySelector: function(selector) { return this._parent.querySelector(selector); },
@@ -217,7 +217,7 @@ function constant$5(x) {
   };
 }
 
-function bindIndex(parent, group, enter, update, exit, data) {
+function bindIndex$1(parent, group, enter, update, exit, data) {
   var i = 0,
       node,
       groupLength = group.length,
@@ -231,7 +231,7 @@ function bindIndex(parent, group, enter, update, exit, data) {
       node.__data__ = data[i];
       update[i] = node;
     } else {
-      enter[i] = new EnterNode(parent, data[i]);
+      enter[i] = new EnterNode$1(parent, data[i]);
     }
   }
 
@@ -243,7 +243,7 @@ function bindIndex(parent, group, enter, update, exit, data) {
   }
 }
 
-function bindKey(parent, group, enter, update, exit, data, key) {
+function bindKey$1(parent, group, enter, update, exit, data, key) {
   var i,
       node,
       nodeByKeyValue = new Map,
@@ -275,7 +275,7 @@ function bindKey(parent, group, enter, update, exit, data, key) {
       node.__data__ = data[i];
       nodeByKeyValue.delete(keyValue);
     } else {
-      enter[i] = new EnterNode(parent, data[i]);
+      enter[i] = new EnterNode$1(parent, data[i]);
     }
   }
 
@@ -287,14 +287,14 @@ function bindKey(parent, group, enter, update, exit, data, key) {
   }
 }
 
-function datum(node) {
+function datum$1(node) {
   return node.__data__;
 }
 
-function selection_data(value, key) {
-  if (!arguments.length) return Array.from(this, datum);
+function selection_data$1(value, key) {
+  if (!arguments.length) return Array.from(this, datum$1);
 
-  var bind = key ? bindKey : bindIndex,
+  var bind = key ? bindKey$1 : bindIndex$1,
       parents = this._parents,
       groups = this._groups;
 
@@ -304,7 +304,7 @@ function selection_data(value, key) {
     var parent = parents[j],
         group = groups[j],
         groupLength = group.length,
-        data = arraylike(value.call(parent, parent && parent.__data__, j, parents)),
+        data = arraylike$1(value.call(parent, parent && parent.__data__, j, parents)),
         dataLength = data.length,
         enterGroup = enter[j] = new Array(dataLength),
         updateGroup = update[j] = new Array(dataLength),
@@ -336,17 +336,17 @@ function selection_data(value, key) {
 // array will only be used briefly while data is being bound. (It is possible to
 // cause the data to change while iterating by using a key function, but please
 // don’t; we’d rather avoid a gratuitous copy.)
-function arraylike(data) {
+function arraylike$1(data) {
   return typeof data === "object" && "length" in data
     ? data // Array, TypedArray, NodeList, array-like
     : Array.from(data); // Map, Set, iterable, string, or anything else
 }
 
-function selection_exit() {
-  return new Selection$1(this._exit || this._groups.map(sparse), this._parents);
+function selection_exit$1() {
+  return new Selection$1(this._exit || this._groups.map(sparse$1), this._parents);
 }
 
-function selection_join(onenter, onupdate, onexit) {
+function selection_join$1(onenter, onupdate, onexit) {
   var enter = this.enter(), update = this, exit = this.exit();
   if (typeof onenter === "function") {
     enter = onenter(enter);
@@ -362,7 +362,7 @@ function selection_join(onenter, onupdate, onexit) {
   return enter && update ? enter.merge(update).order() : update;
 }
 
-function selection_merge(context) {
+function selection_merge$1(context) {
   var selection = context.selection ? context.selection() : context;
 
   for (var groups0 = this._groups, groups1 = selection._groups, m0 = groups0.length, m1 = groups1.length, m = Math.min(m0, m1), merges = new Array(m0), j = 0; j < m; ++j) {
@@ -380,7 +380,7 @@ function selection_merge(context) {
   return new Selection$1(merges, this._parents);
 }
 
-function selection_order() {
+function selection_order$1() {
 
   for (var groups = this._groups, j = -1, m = groups.length; ++j < m;) {
     for (var group = groups[j], i = group.length - 1, next = group[i], node; --i >= 0;) {
@@ -394,8 +394,8 @@ function selection_order() {
   return this;
 }
 
-function selection_sort(compare) {
-  if (!compare) compare = ascending;
+function selection_sort$1(compare) {
+  if (!compare) compare = ascending$1;
 
   function compareNode(a, b) {
     return a && b ? compare(a.__data__, b.__data__) : !a - !b;
@@ -413,22 +413,22 @@ function selection_sort(compare) {
   return new Selection$1(sortgroups, this._parents).order();
 }
 
-function ascending(a, b) {
+function ascending$1(a, b) {
   return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
 }
 
-function selection_call() {
+function selection_call$1() {
   var callback = arguments[0];
   arguments[0] = this;
   callback.apply(null, arguments);
   return this;
 }
 
-function selection_nodes() {
+function selection_nodes$1() {
   return Array.from(this);
 }
 
-function selection_node() {
+function selection_node$1() {
 
   for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
     for (var group = groups[j], i = 0, n = group.length; i < n; ++i) {
@@ -440,17 +440,17 @@ function selection_node() {
   return null;
 }
 
-function selection_size() {
+function selection_size$1() {
   let size = 0;
   for (const node of this) ++size; // eslint-disable-line no-unused-vars
   return size;
 }
 
-function selection_empty() {
+function selection_empty$1() {
   return !this.node();
 }
 
-function selection_each(callback) {
+function selection_each$1(callback) {
 
   for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
     for (var group = groups[j], i = 0, n = group.length, node; i < n; ++i) {
@@ -501,8 +501,8 @@ function attrFunctionNS$1(fullname, value) {
   };
 }
 
-function selection_attr(name, value) {
-  var fullname = namespace(name);
+function selection_attr$1(name, value) {
+  var fullname = namespace$1(name);
 
   if (arguments.length < 2) {
     var node = this.node();
@@ -517,7 +517,7 @@ function selection_attr(name, value) {
       : (fullname.local ? attrConstantNS$1 : attrConstant$1)))(fullname, value));
 }
 
-function defaultView(node) {
+function defaultView$1(node) {
   return (node.ownerDocument && node.ownerDocument.defaultView) // node is a Node
       || (node.document && node) // node is a Window
       || node.defaultView; // node is a Document
@@ -543,33 +543,33 @@ function styleFunction$1(name, value, priority) {
   };
 }
 
-function selection_style(name, value, priority) {
+function selection_style$1(name, value, priority) {
   return arguments.length > 1
       ? this.each((value == null
             ? styleRemove$1 : typeof value === "function"
             ? styleFunction$1
             : styleConstant$1)(name, value, priority == null ? "" : priority))
-      : styleValue(this.node(), name);
+      : styleValue$1(this.node(), name);
 }
 
-function styleValue(node, name) {
+function styleValue$1(node, name) {
   return node.style.getPropertyValue(name)
-      || defaultView(node).getComputedStyle(node, null).getPropertyValue(name);
+      || defaultView$1(node).getComputedStyle(node, null).getPropertyValue(name);
 }
 
-function propertyRemove(name) {
+function propertyRemove$1(name) {
   return function() {
     delete this[name];
   };
 }
 
-function propertyConstant(name, value) {
+function propertyConstant$1(name, value) {
   return function() {
     this[name] = value;
   };
 }
 
-function propertyFunction(name, value) {
+function propertyFunction$1(name, value) {
   return function() {
     var v = value.apply(this, arguments);
     if (v == null) delete this[name];
@@ -577,29 +577,29 @@ function propertyFunction(name, value) {
   };
 }
 
-function selection_property(name, value) {
+function selection_property$1(name, value) {
   return arguments.length > 1
       ? this.each((value == null
-          ? propertyRemove : typeof value === "function"
-          ? propertyFunction
-          : propertyConstant)(name, value))
+          ? propertyRemove$1 : typeof value === "function"
+          ? propertyFunction$1
+          : propertyConstant$1)(name, value))
       : this.node()[name];
 }
 
-function classArray(string) {
+function classArray$1(string) {
   return string.trim().split(/^|\s+/);
 }
 
-function classList(node) {
-  return node.classList || new ClassList(node);
+function classList$1(node) {
+  return node.classList || new ClassList$1(node);
 }
 
-function ClassList(node) {
+function ClassList$1(node) {
   this._node = node;
-  this._names = classArray(node.getAttribute("class") || "");
+  this._names = classArray$1(node.getAttribute("class") || "");
 }
 
-ClassList.prototype = {
+ClassList$1.prototype = {
   add: function(name) {
     var i = this._names.indexOf(name);
     if (i < 0) {
@@ -619,50 +619,50 @@ ClassList.prototype = {
   }
 };
 
-function classedAdd(node, names) {
-  var list = classList(node), i = -1, n = names.length;
+function classedAdd$1(node, names) {
+  var list = classList$1(node), i = -1, n = names.length;
   while (++i < n) list.add(names[i]);
 }
 
-function classedRemove(node, names) {
-  var list = classList(node), i = -1, n = names.length;
+function classedRemove$1(node, names) {
+  var list = classList$1(node), i = -1, n = names.length;
   while (++i < n) list.remove(names[i]);
 }
 
-function classedTrue(names) {
+function classedTrue$1(names) {
   return function() {
-    classedAdd(this, names);
+    classedAdd$1(this, names);
   };
 }
 
-function classedFalse(names) {
+function classedFalse$1(names) {
   return function() {
-    classedRemove(this, names);
+    classedRemove$1(this, names);
   };
 }
 
-function classedFunction(names, value) {
+function classedFunction$1(names, value) {
   return function() {
-    (value.apply(this, arguments) ? classedAdd : classedRemove)(this, names);
+    (value.apply(this, arguments) ? classedAdd$1 : classedRemove$1)(this, names);
   };
 }
 
-function selection_classed(name, value) {
-  var names = classArray(name + "");
+function selection_classed$1(name, value) {
+  var names = classArray$1(name + "");
 
   if (arguments.length < 2) {
-    var list = classList(this.node()), i = -1, n = names.length;
+    var list = classList$1(this.node()), i = -1, n = names.length;
     while (++i < n) if (!list.contains(names[i])) return false;
     return true;
   }
 
   return this.each((typeof value === "function"
-      ? classedFunction : value
-      ? classedTrue
-      : classedFalse)(names, value));
+      ? classedFunction$1 : value
+      ? classedTrue$1
+      : classedFalse$1)(names, value));
 }
 
-function textRemove() {
+function textRemove$1() {
   this.textContent = "";
 }
 
@@ -679,106 +679,106 @@ function textFunction$1(value) {
   };
 }
 
-function selection_text(value) {
+function selection_text$1(value) {
   return arguments.length
       ? this.each(value == null
-          ? textRemove : (typeof value === "function"
+          ? textRemove$1 : (typeof value === "function"
           ? textFunction$1
           : textConstant$1)(value))
       : this.node().textContent;
 }
 
-function htmlRemove() {
+function htmlRemove$1() {
   this.innerHTML = "";
 }
 
-function htmlConstant(value) {
+function htmlConstant$1(value) {
   return function() {
     this.innerHTML = value;
   };
 }
 
-function htmlFunction(value) {
+function htmlFunction$1(value) {
   return function() {
     var v = value.apply(this, arguments);
     this.innerHTML = v == null ? "" : v;
   };
 }
 
-function selection_html(value) {
+function selection_html$1(value) {
   return arguments.length
       ? this.each(value == null
-          ? htmlRemove : (typeof value === "function"
-          ? htmlFunction
-          : htmlConstant)(value))
+          ? htmlRemove$1 : (typeof value === "function"
+          ? htmlFunction$1
+          : htmlConstant$1)(value))
       : this.node().innerHTML;
 }
 
-function raise() {
+function raise$1() {
   if (this.nextSibling) this.parentNode.appendChild(this);
 }
 
-function selection_raise() {
-  return this.each(raise);
+function selection_raise$1() {
+  return this.each(raise$1);
 }
 
-function lower() {
+function lower$1() {
   if (this.previousSibling) this.parentNode.insertBefore(this, this.parentNode.firstChild);
 }
 
-function selection_lower() {
-  return this.each(lower);
+function selection_lower$1() {
+  return this.each(lower$1);
 }
 
-function selection_append(name) {
-  var create = typeof name === "function" ? name : creator(name);
+function selection_append$1(name) {
+  var create = typeof name === "function" ? name : creator$1(name);
   return this.select(function() {
     return this.appendChild(create.apply(this, arguments));
   });
 }
 
-function constantNull() {
+function constantNull$1() {
   return null;
 }
 
-function selection_insert(name, before) {
-  var create = typeof name === "function" ? name : creator(name),
-      select = before == null ? constantNull : typeof before === "function" ? before : selector(before);
+function selection_insert$1(name, before) {
+  var create = typeof name === "function" ? name : creator$1(name),
+      select = before == null ? constantNull$1 : typeof before === "function" ? before : selector$1(before);
   return this.select(function() {
     return this.insertBefore(create.apply(this, arguments), select.apply(this, arguments) || null);
   });
 }
 
-function remove() {
+function remove$1() {
   var parent = this.parentNode;
   if (parent) parent.removeChild(this);
 }
 
-function selection_remove() {
-  return this.each(remove);
+function selection_remove$1() {
+  return this.each(remove$1);
 }
 
-function selection_cloneShallow() {
+function selection_cloneShallow$1() {
   var clone = this.cloneNode(false), parent = this.parentNode;
   return parent ? parent.insertBefore(clone, this.nextSibling) : clone;
 }
 
-function selection_cloneDeep() {
+function selection_cloneDeep$1() {
   var clone = this.cloneNode(true), parent = this.parentNode;
   return parent ? parent.insertBefore(clone, this.nextSibling) : clone;
 }
 
-function selection_clone(deep) {
-  return this.select(deep ? selection_cloneDeep : selection_cloneShallow);
+function selection_clone$1(deep) {
+  return this.select(deep ? selection_cloneDeep$1 : selection_cloneShallow$1);
 }
 
-function selection_datum(value) {
+function selection_datum$1(value) {
   return arguments.length
       ? this.property("__data__", value)
       : this.node().__data__;
 }
 
-function contextListener(listener) {
+function contextListener$1(listener) {
   return function(event) {
     listener.call(this, event, this.__data__);
   };
@@ -792,7 +792,7 @@ function parseTypenames$1(typenames) {
   });
 }
 
-function onRemove(typename) {
+function onRemove$1(typename) {
   return function() {
     var on = this.__on;
     if (!on) return;
@@ -808,9 +808,9 @@ function onRemove(typename) {
   };
 }
 
-function onAdd(typename, value, options) {
+function onAdd$1(typename, value, options) {
   return function() {
-    var on = this.__on, o, listener = contextListener(value);
+    var on = this.__on, o, listener = contextListener$1(value);
     if (on) for (var j = 0, m = on.length; j < m; ++j) {
       if ((o = on[j]).type === typename.type && o.name === typename.name) {
         this.removeEventListener(o.type, o.listener, o.options);
@@ -826,7 +826,7 @@ function onAdd(typename, value, options) {
   };
 }
 
-function selection_on(typename, value, options) {
+function selection_on$1(typename, value, options) {
   var typenames = parseTypenames$1(typename + ""), i, n = typenames.length, t;
 
   if (arguments.length < 2) {
@@ -841,13 +841,13 @@ function selection_on(typename, value, options) {
     return;
   }
 
-  on = value ? onAdd : onRemove;
+  on = value ? onAdd$1 : onRemove$1;
   for (i = 0; i < n; ++i) this.each(on(typenames[i], value, options));
   return this;
 }
 
-function dispatchEvent(node, type, params) {
-  var window = defaultView(node),
+function dispatchEvent$1(node, type, params) {
+  var window = defaultView$1(node),
       event = window.CustomEvent;
 
   if (typeof event === "function") {
@@ -861,25 +861,25 @@ function dispatchEvent(node, type, params) {
   node.dispatchEvent(event);
 }
 
-function dispatchConstant(type, params) {
+function dispatchConstant$1(type, params) {
   return function() {
-    return dispatchEvent(this, type, params);
+    return dispatchEvent$1(this, type, params);
   };
 }
 
-function dispatchFunction(type, params) {
+function dispatchFunction$1(type, params) {
   return function() {
-    return dispatchEvent(this, type, params.apply(this, arguments));
+    return dispatchEvent$1(this, type, params.apply(this, arguments));
   };
 }
 
-function selection_dispatch(type, params) {
+function selection_dispatch$1(type, params) {
   return this.each((typeof params === "function"
-      ? dispatchFunction
-      : dispatchConstant)(type, params));
+      ? dispatchFunction$1
+      : dispatchConstant$1)(type, params));
 }
 
-function* selection_iterator() {
+function* selection_iterator$1() {
   for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
     for (var group = groups[j], i = 0, n = group.length, node; i < n; ++i) {
       if (node = group[i]) yield node;
@@ -887,7 +887,7 @@ function* selection_iterator() {
   }
 }
 
-var root = [null];
+var root$1 = [null];
 
 function Selection$1(groups, parents) {
   this._groups = groups;
@@ -895,56 +895,56 @@ function Selection$1(groups, parents) {
 }
 
 function selection() {
-  return new Selection$1([[document.documentElement]], root);
+  return new Selection$1([[document.documentElement]], root$1);
 }
 
-function selection_selection() {
+function selection_selection$1() {
   return this;
 }
 
 Selection$1.prototype = selection.prototype = {
   constructor: Selection$1,
-  select: selection_select,
-  selectAll: selection_selectAll,
-  selectChild: selection_selectChild,
-  selectChildren: selection_selectChildren,
-  filter: selection_filter,
-  data: selection_data,
-  enter: selection_enter,
-  exit: selection_exit,
-  join: selection_join,
-  merge: selection_merge,
-  selection: selection_selection,
-  order: selection_order,
-  sort: selection_sort,
-  call: selection_call,
-  nodes: selection_nodes,
-  node: selection_node,
-  size: selection_size,
-  empty: selection_empty,
-  each: selection_each,
-  attr: selection_attr,
-  style: selection_style,
-  property: selection_property,
-  classed: selection_classed,
-  text: selection_text,
-  html: selection_html,
-  raise: selection_raise,
-  lower: selection_lower,
-  append: selection_append,
-  insert: selection_insert,
-  remove: selection_remove,
-  clone: selection_clone,
-  datum: selection_datum,
-  on: selection_on,
-  dispatch: selection_dispatch,
-  [Symbol.iterator]: selection_iterator
+  select: selection_select$1,
+  selectAll: selection_selectAll$1,
+  selectChild: selection_selectChild$1,
+  selectChildren: selection_selectChildren$1,
+  filter: selection_filter$1,
+  data: selection_data$1,
+  enter: selection_enter$1,
+  exit: selection_exit$1,
+  join: selection_join$1,
+  merge: selection_merge$1,
+  selection: selection_selection$1,
+  order: selection_order$1,
+  sort: selection_sort$1,
+  call: selection_call$1,
+  nodes: selection_nodes$1,
+  node: selection_node$1,
+  size: selection_size$1,
+  empty: selection_empty$1,
+  each: selection_each$1,
+  attr: selection_attr$1,
+  style: selection_style$1,
+  property: selection_property$1,
+  classed: selection_classed$1,
+  text: selection_text$1,
+  html: selection_html$1,
+  raise: selection_raise$1,
+  lower: selection_lower$1,
+  append: selection_append$1,
+  insert: selection_insert$1,
+  remove: selection_remove$1,
+  clone: selection_clone$1,
+  datum: selection_datum$1,
+  on: selection_on$1,
+  dispatch: selection_dispatch$1,
+  [Symbol.iterator]: selection_iterator$1
 };
 
-function select(selector) {
+function select$1(selector) {
   return typeof selector === "string"
       ? new Selection$1([[document.querySelector(selector)]], [document.documentElement])
-      : new Selection$1([[selector]], root);
+      : new Selection$1([[selector]], root$1);
 }
 
 function sourceEvent(event) {
@@ -986,7 +986,7 @@ function Dispatch(_) {
   this._ = _;
 }
 
-function parseTypenames(typenames, types) {
+function parseTypenames$2(typenames, types) {
   return typenames.trim().split(/^|\s+/).map(function(t) {
     var name = "", i = t.indexOf(".");
     if (i >= 0) name = t.slice(i + 1), t = t.slice(0, i);
@@ -999,7 +999,7 @@ Dispatch.prototype = dispatch.prototype = {
   constructor: Dispatch,
   on: function(typename, callback) {
     var _ = this._,
-        T = parseTypenames(typename + "", _),
+        T = parseTypenames$2(typename + "", _),
         t,
         i = -1,
         n = T.length;
@@ -1071,7 +1071,7 @@ function noevent$1(event) {
 
 function dragDisable(view) {
   var root = view.document.documentElement,
-      selection = select(view).on("dragstart.drag", noevent$1, nonpassivecapture);
+      selection = select$1(view).on("dragstart.drag", noevent$1, nonpassivecapture);
   if ("onselectstart" in root) {
     selection.on("selectstart.drag", noevent$1, nonpassivecapture);
   } else {
@@ -1082,7 +1082,7 @@ function dragDisable(view) {
 
 function yesdrag(view, noclick) {
   var root = view.document.documentElement,
-      selection = select(view).on("dragstart.drag", null);
+      selection = select$1(view).on("dragstart.drag", null);
   if (noclick) {
     selection.on("click.drag", noevent$1, nonpassivecapture);
     setTimeout(function() { selection.on("click.drag", null); }, 0);
@@ -1172,7 +1172,7 @@ function drag() {
     if (touchending || !filter.call(this, event, d)) return;
     var gesture = beforestart(this, container.call(this, event, d), event, d, "mouse");
     if (!gesture) return;
-    select(event.view)
+    select$1(event.view)
       .on("mousemove.drag", mousemoved, nonpassivecapture)
       .on("mouseup.drag", mouseupped, nonpassivecapture);
     dragDisable(event.view);
@@ -1193,7 +1193,7 @@ function drag() {
   }
 
   function mouseupped(event) {
-    select(event.view).on("mousemove.drag mouseup.drag", null);
+    select$1(event.view).on("mousemove.drag mouseup.drag", null);
     yesdrag(event.view, mousemoving);
     noevent$1(event);
     gestures.mouse("end", event);
@@ -2402,19 +2402,19 @@ function interpolate(a, b) {
       : interpolateString)(a, b);
 }
 
-function attrRemove(name) {
+function attrRemove$2(name) {
   return function() {
     this.removeAttribute(name);
   };
 }
 
-function attrRemoveNS(fullname) {
+function attrRemoveNS$2(fullname) {
   return function() {
     this.removeAttributeNS(fullname.space, fullname.local);
   };
 }
 
-function attrConstant(name, interpolate, value1) {
+function attrConstant$2(name, interpolate, value1) {
   var string00,
       string1 = value1 + "",
       interpolate0;
@@ -2426,7 +2426,7 @@ function attrConstant(name, interpolate, value1) {
   };
 }
 
-function attrConstantNS(fullname, interpolate, value1) {
+function attrConstantNS$2(fullname, interpolate, value1) {
   var string00,
       string1 = value1 + "",
       interpolate0;
@@ -2438,7 +2438,7 @@ function attrConstantNS(fullname, interpolate, value1) {
   };
 }
 
-function attrFunction(name, interpolate, value) {
+function attrFunction$2(name, interpolate, value) {
   var string00,
       string10,
       interpolate0;
@@ -2453,7 +2453,7 @@ function attrFunction(name, interpolate, value) {
   };
 }
 
-function attrFunctionNS(fullname, interpolate, value) {
+function attrFunctionNS$2(fullname, interpolate, value) {
   var string00,
       string10,
       interpolate0;
@@ -2469,11 +2469,11 @@ function attrFunctionNS(fullname, interpolate, value) {
 }
 
 function transition_attr(name, value) {
-  var fullname = namespace(name), i = fullname === "transform" ? interpolateTransformSvg : interpolate;
+  var fullname = namespace$1(name), i = fullname === "transform" ? interpolateTransformSvg : interpolate;
   return this.attrTween(name, typeof value === "function"
-      ? (fullname.local ? attrFunctionNS : attrFunction)(fullname, i, tweenValue(this, "attr." + name, value))
-      : value == null ? (fullname.local ? attrRemoveNS : attrRemove)(fullname)
-      : (fullname.local ? attrConstantNS : attrConstant)(fullname, i, value));
+      ? (fullname.local ? attrFunctionNS$2 : attrFunction$2)(fullname, i, tweenValue(this, "attr." + name, value))
+      : value == null ? (fullname.local ? attrRemoveNS$2 : attrRemove$2)(fullname)
+      : (fullname.local ? attrConstantNS$2 : attrConstant$2)(fullname, i, value));
 }
 
 function attrInterpolate(name, i) {
@@ -2515,7 +2515,7 @@ function transition_attrTween(name, value) {
   if (arguments.length < 2) return (key = this.tween(key)) && key._value;
   if (value == null) return this.tween(key, null);
   if (typeof value !== "function") throw new Error;
-  var fullname = namespace(name);
+  var fullname = namespace$1(name);
   return this.tween(key, (fullname.local ? attrTweenNS : attrTween)(fullname, value));
 }
 
@@ -2592,7 +2592,7 @@ function transition_easeVarying(value) {
 }
 
 function transition_filter(match) {
-  if (typeof match !== "function") match = matcher(match);
+  if (typeof match !== "function") match = matcher$1(match);
 
   for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, subgroup = subgroups[j] = [], node, i = 0; i < n; ++i) {
@@ -2670,7 +2670,7 @@ function transition_select(select) {
   var name = this._name,
       id = this._id;
 
-  if (typeof select !== "function") select = selector(select);
+  if (typeof select !== "function") select = selector$1(select);
 
   for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, subgroup = subgroups[j] = new Array(n), node, subnode, i = 0; i < n; ++i) {
@@ -2689,7 +2689,7 @@ function transition_selectAll(select) {
   var name = this._name,
       id = this._id;
 
-  if (typeof select !== "function") select = selectorAll(select);
+  if (typeof select !== "function") select = selectorAll$1(select);
 
   for (var groups = this._groups, m = groups.length, subgroups = [], parents = [], j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, node, i = 0; i < n; ++i) {
@@ -2708,10 +2708,10 @@ function transition_selectAll(select) {
   return new Transition(subgroups, parents, name, id);
 }
 
-var Selection = selection.prototype.constructor;
+var Selection$2 = selection.prototype.constructor;
 
 function transition_selection() {
-  return new Selection(this._groups, this._parents);
+  return new Selection$2(this._groups, this._parents);
 }
 
 function styleNull(name, interpolate) {
@@ -2719,41 +2719,41 @@ function styleNull(name, interpolate) {
       string10,
       interpolate0;
   return function() {
-    var string0 = styleValue(this, name),
-        string1 = (this.style.removeProperty(name), styleValue(this, name));
+    var string0 = styleValue$1(this, name),
+        string1 = (this.style.removeProperty(name), styleValue$1(this, name));
     return string0 === string1 ? null
         : string0 === string00 && string1 === string10 ? interpolate0
         : interpolate0 = interpolate(string00 = string0, string10 = string1);
   };
 }
 
-function styleRemove(name) {
+function styleRemove$2(name) {
   return function() {
     this.style.removeProperty(name);
   };
 }
 
-function styleConstant(name, interpolate, value1) {
+function styleConstant$2(name, interpolate, value1) {
   var string00,
       string1 = value1 + "",
       interpolate0;
   return function() {
-    var string0 = styleValue(this, name);
+    var string0 = styleValue$1(this, name);
     return string0 === string1 ? null
         : string0 === string00 ? interpolate0
         : interpolate0 = interpolate(string00 = string0, value1);
   };
 }
 
-function styleFunction(name, interpolate, value) {
+function styleFunction$2(name, interpolate, value) {
   var string00,
       string10,
       interpolate0;
   return function() {
-    var string0 = styleValue(this, name),
+    var string0 = styleValue$1(this, name),
         value1 = value(this),
         string1 = value1 + "";
-    if (value1 == null) string1 = value1 = (this.style.removeProperty(name), styleValue(this, name));
+    if (value1 == null) string1 = value1 = (this.style.removeProperty(name), styleValue$1(this, name));
     return string0 === string1 ? null
         : string0 === string00 && string1 === string10 ? interpolate0
         : (string10 = string1, interpolate0 = interpolate(string00 = string0, value1));
@@ -2765,7 +2765,7 @@ function styleMaybeRemove(id, name) {
   return function() {
     var schedule = set(this, id),
         on = schedule.on,
-        listener = schedule.value[key] == null ? remove || (remove = styleRemove(name)) : undefined;
+        listener = schedule.value[key] == null ? remove || (remove = styleRemove$2(name)) : undefined;
 
     // If this node shared a dispatch with the previous node,
     // just assign the updated shared dispatch and we’re done!
@@ -2780,12 +2780,12 @@ function transition_style(name, value, priority) {
   var i = (name += "") === "transform" ? interpolateTransformCss : interpolate;
   return value == null ? this
       .styleTween(name, styleNull(name, i))
-      .on("end.style." + name, styleRemove(name))
+      .on("end.style." + name, styleRemove$2(name))
     : typeof value === "function" ? this
-      .styleTween(name, styleFunction(name, i, tweenValue(this, "style." + name, value)))
+      .styleTween(name, styleFunction$2(name, i, tweenValue(this, "style." + name, value)))
       .each(styleMaybeRemove(this._id, name))
     : this
-      .styleTween(name, styleConstant(name, i, value), priority)
+      .styleTween(name, styleConstant$2(name, i, value), priority)
       .on("end.style." + name, null);
 }
 
@@ -2814,13 +2814,13 @@ function transition_styleTween(name, value, priority) {
   return this.tween(key, styleTween(name, value, priority == null ? "" : priority));
 }
 
-function textConstant(value) {
+function textConstant$2(value) {
   return function() {
     this.textContent = value;
   };
 }
 
-function textFunction(value) {
+function textFunction$2(value) {
   return function() {
     var value1 = value(this);
     this.textContent = value1 == null ? "" : value1;
@@ -2829,8 +2829,8 @@ function textFunction(value) {
 
 function transition_text(value) {
   return this.tween("text", typeof value === "function"
-      ? textFunction(tweenValue(this, "text", value))
-      : textConstant(value == null ? "" : value + ""));
+      ? textFunction$2(tweenValue(this, "text", value))
+      : textConstant$2(value == null ? "" : value + ""));
 }
 
 function textInterpolate(i) {
@@ -3281,7 +3281,7 @@ function zoom() {
       return this;
     },
     emit: function(type) {
-      var d = select(this.that).datum();
+      var d = select$1(this.that).datum();
       listeners.call(
         type,
         this.that,
@@ -3337,7 +3337,7 @@ function zoom() {
     if (touchending || !filter.apply(this, arguments)) return;
     var currentTarget = event.currentTarget,
         g = gesture(this, args, true).event(event),
-        v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true),
+        v = select$1(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true),
         p = pointer(event, currentTarget),
         x0 = event.clientX,
         y0 = event.clientY;
@@ -3375,8 +3375,8 @@ function zoom() {
         t1 = constrain(translate(scale(t0, k1), p0, p1), extent.apply(this, args), translateExtent);
 
     noevent(event);
-    if (duration > 0) select(this).transition().duration(duration).call(schedule, t1, p0, event);
-    else select(this).call(zoom.transform, t1, p0, event);
+    if (duration > 0) select$1(this).transition().duration(duration).call(schedule, t1, p0, event);
+    else select$1(this).call(zoom.transform, t1, p0, event);
   }
 
   function touchstarted(event, ...args) {
@@ -3453,7 +3453,7 @@ function zoom() {
       if (g.taps === 2) {
         t = pointer(t, this);
         if (Math.hypot(touchfirst[0] - t[0], touchfirst[1] - t[1]) < tapDistance) {
-          var p = select(this).on("dblclick.zoom");
+          var p = select$1(this).on("dblclick.zoom");
           if (p) p.apply(this, arguments);
         }
       }
@@ -4289,7 +4289,7 @@ class Observable{
 // modified d3 collide.js to use the center of the rectangle
 
 
-function constant (x) {
+function constant$6 (x) {
     return function() {
       return x;
     };
@@ -4314,7 +4314,7 @@ function collideRectCenter(radius) {
       strength = 1,
       iterations = 1;
 
-  if (typeof radius !== "function") radius = constant(radius == null ? 1 : +radius);
+  if (typeof radius !== "function") radius = constant$6(radius == null ? 1 : +radius);
 
   function force() {
     var i, n = nodes.length,
@@ -4391,7 +4391,7 @@ function collideRectCenter(radius) {
   };
 
   force.radius = function(_) {
-    return arguments.length ? (radius = typeof _ === "function" ? _ : constant(+_), initialize(), force) : radius;
+    return arguments.length ? (radius = typeof _ === "function" ? _ : constant$6(+_), initialize(), force) : radius;
   };
 
   return force;
@@ -4496,13 +4496,12 @@ let Box$1 = class Box {
         this.boxes = this.boxes.filter( box => box.id !== id);
         this.sharedState.boxes = this.sharedState.boxes.filter( box => box.boxId !== id);
         this.boxInsertOrder = this.boxInsertOrder.filter( boxId => boxId !== id);
-        select(`#${id}`).remove();
+        select$1(`#${id}`).remove();
     }
 
     updateBoxes(data) {
         const boxesToAdd = data.boxesToAdd;
         const boxesToRemove = data.boxesToRemove;
-        console.log(data);
         boxesToAdd.forEach( box => {
             this.addBox(box);
         });
@@ -4541,7 +4540,7 @@ let Box$1 = class Box {
     }
 
     setSize() {
-        const parentNode = select(`#${this.parentBoxId}`).node();
+        const parentNode = select$1(`#${this.parentBoxId}`).node();
         const gridXMax = this.sharedStateByAncestorId[this.parentBoxId].gridXMax;
         this.dx = parentNode.clientWidth / gridXMax;
         if ( this.widthPerCent !== undefined ) {
@@ -4561,7 +4560,7 @@ let Box$1 = class Box {
     }
 
     setQuantise() {
-        const parentNode = select(`#${this.parentId}`).node();
+        const parentNode = select$1(`#${this.parentId}`).node();
         const gridXMax = this.sharedStateByAncestorId[this.parentBoxId].gridXMax;
         this.dx = parentNode.clientWidth / gridXMax;
         if ( this.quantiseX ) {
@@ -4589,7 +4588,7 @@ let Box$1 = class Box {
     }
 
     renderDivPosition() {
-        select(`#${this.id}`)
+        select$1(`#${this.id}`)
             .style("width",`${this.width - 2*this.margin}px`)
             .style("height",`${this.height - 2*this.margin}px`)
             .style("left", `${this.x + this.margin}px`)
@@ -4597,11 +4596,11 @@ let Box$1 = class Box {
     }
 
     raiseDiv() {
-        select(`#${this.id}`).raise();
+        select$1(`#${this.id}`).raise();
     }
 
     makeComponentDiv() {
-        const div = select(`#${this.id}`);
+        const div = select$1(`#${this.id}`);
         div.append("div")
             .attr("id", `${this.componentId}`)
             .attr("class", "board-box-component")
@@ -4610,11 +4609,12 @@ let Box$1 = class Box {
             .style("left", `${this.componentMargin.left}px`)
             .style("top", `${this.componentMargin.top}px`)
             .style("position","absolute")
-            .style("overflow","hidden");
+            .style("overflow","hidden")
+            .style("pointer-events","none");
     }
 
     updateComponentDiv() {
-        const div = select(`#${this.id}`);
+        const div = select$1(`#${this.id}`);
         const componentDiv = div.select(".board-box-component");
         componentDiv
             .style("width",`${this.width - this.componentMargin.left - this.componentMargin.right}px`)
@@ -4793,23 +4793,16 @@ let Box$1 = class Box {
         let found = false;
         let boxInsertOrderNew;
         this.boxes.forEach( box => {
-            console.log(box.id, id);
-            console.log(pt);
             let xmin = box.x + 1;
             let xmax = box.x + box.width -2;
             let ymin = box.y + 1;
             let ymax = box.y + box.height -2;
-            console.log({xmin, xmax, ymin, ymax});
             if ( pt.x > xmin && pt.x <= xmax && pt.y >= ymin && pt.y <= ymax && id !== box.id ) {
                 found = true;
-                console.log("in insert order, box found");
-                console.log(box.id, id);
-                console.log(boxInsertOrder);
                 let insertPointId = box.id;
                 boxInsertOrderNew = boxInsertOrder.filter( boxId => boxId !== id);
                 let insertIndex = boxInsertOrderNew.indexOf(insertPointId);
                 boxInsertOrderNew.splice(insertIndex,0,id);
-                console.log(boxInsertOrderNew);
             }
         });
         if ( found ) {
@@ -4830,8 +4823,6 @@ let Box$1 = class Box {
     }
 
     dragEnd(event) {
-        console.log("drag end");
-        console.log(event);
         this.setParentInsertOrder({pt:{x:event.x, y:event.y}, id:this.id});
         this.requestParentAutoLayout();
         this.requestParentAutoNoOverlap(false, this.id);
@@ -4950,7 +4941,7 @@ let Box$1 = class Box {
         const boundDragStart = this.dragStart.bind(this);
         const boundDragEnd = this.dragEnd.bind(this);
         this.requestParentAutoLayout.bind(this);
-        const parentDiv = select(`#${this.parentId}`);
+        const parentDiv = select$1(`#${this.parentId}`);
         this.setSize();
         const div = parentDiv.append("div")
             .datum({"id":this.id})
@@ -4977,7 +4968,7 @@ let Box$1 = class Box {
             .style("position","absolute")
             .call(drag()
                 .subject((e) => ({x: this.x, y: 0. }))
-                .container( () => { return select(`#${this.id}`).node().parentNode } ) 
+                .container( () => { return select$1(`#${this.id}`).node().parentNode } ) 
                 .on("start", boundDragStart )
                 .on("drag", boundLeftDrag )
                 //.on("end", boundRequestParentAutoLayout));
@@ -5020,7 +5011,7 @@ let Box$1 = class Box {
             .style("position","absolute")
             .call(drag()
                 .subject((e) => ({x: this.x, y: this.height  }))
-                .container( () => { return select(`#${this.id}`).node().parentNode } ) 
+                .container( () => { return select$1(`#${this.id}`).node().parentNode } ) 
                 .on("start", boundDragStart )
                 .on("drag", boundBottomLeftDrag)
                 //.on("end", boundRequestParentAutoLayout));
@@ -5049,7 +5040,7 @@ let Box$1 = class Box {
             .style("position","absolute")
             .call(drag()
                 .subject((e) => ({x: this.x, y: this.y  }))
-                .container( () => { return select(`#${this.id}`).node().parentNode } )
+                .container( () => { return select$1(`#${this.id}`).node().parentNode } )
                 .on("start", boundDragStart ) 
                 .on("drag", boundTopLeftDrag)
                 //.on("end", boundRequestParentAutoLayout));
@@ -5064,7 +5055,7 @@ let Box$1 = class Box {
             .style("position","absolute")
             .call(drag()
                 .subject((e) => ({x: this.width, y: this.y  }))
-                .container( () => { return select(`#${this.id}`).node().parentNode } ) 
+                .container( () => { return select$1(`#${this.id}`).node().parentNode } ) 
                 .on("start", boundDragStart )
                 .on("drag", boundTopRightDrag)
                 //.on("end", boundRequestParentAutoLayout));
@@ -5161,7 +5152,7 @@ let Board$1 = class Board {
     }
 
     setSize() {
-        const div = select(`#${this.id}`);
+        const div = select$1(`#${this.id}`);
         const parentNode = div.node().parentNode;
         if ( this.widthPerCent !== undefined ) {
             this.width = this.widthPerCent/100 * parentNode.clientWidth;
@@ -5198,9 +5189,9 @@ let Board$1 = class Board {
 
     make() {
         const boundZoomed = this.zoomed.bind(this);
-        select(`#${this.targetId}`).attr("id", this.id);
+        select$1(`#${this.targetId}`).attr("id", this.id);
         this.setSize();
-        select(`#${this.id}`)
+        select$1(`#${this.id}`)
             .attr("class", `board ${this.className}`)
             .style("width",`${this.width}px`)
             .style("height",`${this.height}px`)
@@ -5211,7 +5202,7 @@ let Board$1 = class Board {
     }
 
     update() {
-        const div = select(`#${this.id}`);
+        const div = select$1(`#${this.id}`);
         const boxes = div.selectAll(".board-box")
             .data(this.getAllBoxes, k => k.id);
         boxes.enter().each(boxMakeForD3Each);
@@ -5242,7 +5233,7 @@ let Board$1 = class Board {
             }
         });
        
-        const boardDiv = select(`#${this.id}`);
+        const boardDiv = select$1(`#${this.id}`);
         //    .style("background-position", `${t.x}px ${t.y}px` )
         //    .style("background-size", `${t.k*20}px ${t.k*20}px`);
         const boxes = boardDiv.selectAll(".board-box")
@@ -5297,6 +5288,49 @@ let Context$1 = class Context {
 
 };
 
+class Component{
+    constructor(options){
+        //this.margin = options.margin || {top:10, right:10, bottom:10, left:10};
+        //this.containerClassName = options.containerClassName || "component-area";
+    }
+
+    get width() {
+        return select$1(`#${this.id}`).node().clientWidth;
+    }   
+
+    get height() {
+        return select$1(`#${this.id}`).node().clientHeight;
+    }
+
+    get left() {
+        return select$1(`#${this.id}`).node().getBoundingClientRect().left;
+    }
+
+    get top() {
+        return select$1(`#${this.id}`).node().getBoundingClientRect().top;
+    }
+
+    /*
+    get containerWidth() {
+        return this.width - this.margin.left - this.margin.right;
+    }
+
+    get containerHeight() {
+        return this.height - this.margin.top - this.margin.bottom;
+    }
+
+    setContainerSize() {
+        const container = d3.select(`#${this.parentId}`).select(`.${this.containerClassName}`);
+        container
+            .style("width", `${this.containerWidth}px`)
+            .style("height", `${this.containerHeight}px`)
+            .style("left", `${this.margin.left}px`)
+            .style("top", `${this.margin.top}px`)
+            .attr("width", this.containerWidth)
+            .attr("height", this.containerHeight);
+    }*/
+}
+
 class Context extends Context$1 {
   constructor() {
     super();
@@ -5318,14 +5352,1312 @@ class Context extends Context$1 {
 }
 
 class Board extends Board$1 {
-    constructor() {
-        super();
+    constructor(options) {
+        options = options || {};
+        super(options);
+        this.sharedState.modelName = options.modelName || "modelName";
     }
 }
 
 class Box extends Box$1 {
-    constructor() {
-        super();
+    constructor(options) {
+        options = options || {};
+        options.boxesSharedStateKeys = ["boxId", "name"];
+        super(options);
+        this.name = options.name || null;
+    }
+}
+
+var xhtml = "http://www.w3.org/1999/xhtml";
+
+var namespaces = {
+  svg: "http://www.w3.org/2000/svg",
+  xhtml: xhtml,
+  xlink: "http://www.w3.org/1999/xlink",
+  xml: "http://www.w3.org/XML/1998/namespace",
+  xmlns: "http://www.w3.org/2000/xmlns/"
+};
+
+function namespace(name) {
+  var prefix = name += "", i = prefix.indexOf(":");
+  if (i >= 0 && (prefix = name.slice(0, i)) !== "xmlns") name = name.slice(i + 1);
+  return namespaces.hasOwnProperty(prefix) ? {space: namespaces[prefix], local: name} : name; // eslint-disable-line no-prototype-builtins
+}
+
+function creatorInherit(name) {
+  return function() {
+    var document = this.ownerDocument,
+        uri = this.namespaceURI;
+    return uri === xhtml && document.documentElement.namespaceURI === xhtml
+        ? document.createElement(name)
+        : document.createElementNS(uri, name);
+  };
+}
+
+function creatorFixed(fullname) {
+  return function() {
+    return this.ownerDocument.createElementNS(fullname.space, fullname.local);
+  };
+}
+
+function creator(name) {
+  var fullname = namespace(name);
+  return (fullname.local
+      ? creatorFixed
+      : creatorInherit)(fullname);
+}
+
+function none() {}
+
+function selector(selector) {
+  return selector == null ? none : function() {
+    return this.querySelector(selector);
+  };
+}
+
+function selection_select(select) {
+  if (typeof select !== "function") select = selector(select);
+
+  for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
+    for (var group = groups[j], n = group.length, subgroup = subgroups[j] = new Array(n), node, subnode, i = 0; i < n; ++i) {
+      if ((node = group[i]) && (subnode = select.call(node, node.__data__, i, group))) {
+        if ("__data__" in node) subnode.__data__ = node.__data__;
+        subgroup[i] = subnode;
+      }
+    }
+  }
+
+  return new Selection(subgroups, this._parents);
+}
+
+// Given something array like (or null), returns something that is strictly an
+// array. This is used to ensure that array-like objects passed to d3.selectAll
+// or selection.selectAll are converted into proper arrays when creating a
+// selection; we don’t ever want to create a selection backed by a live
+// HTMLCollection or NodeList. However, note that selection.selectAll will use a
+// static NodeList as a group, since it safely derived from querySelectorAll.
+function array(x) {
+  return x == null ? [] : Array.isArray(x) ? x : Array.from(x);
+}
+
+function empty() {
+  return [];
+}
+
+function selectorAll(selector) {
+  return selector == null ? empty : function() {
+    return this.querySelectorAll(selector);
+  };
+}
+
+function arrayAll(select) {
+  return function() {
+    return array(select.apply(this, arguments));
+  };
+}
+
+function selection_selectAll(select) {
+  if (typeof select === "function") select = arrayAll(select);
+  else select = selectorAll(select);
+
+  for (var groups = this._groups, m = groups.length, subgroups = [], parents = [], j = 0; j < m; ++j) {
+    for (var group = groups[j], n = group.length, node, i = 0; i < n; ++i) {
+      if (node = group[i]) {
+        subgroups.push(select.call(node, node.__data__, i, group));
+        parents.push(node);
+      }
+    }
+  }
+
+  return new Selection(subgroups, parents);
+}
+
+function matcher(selector) {
+  return function() {
+    return this.matches(selector);
+  };
+}
+
+function childMatcher(selector) {
+  return function(node) {
+    return node.matches(selector);
+  };
+}
+
+var find = Array.prototype.find;
+
+function childFind(match) {
+  return function() {
+    return find.call(this.children, match);
+  };
+}
+
+function childFirst() {
+  return this.firstElementChild;
+}
+
+function selection_selectChild(match) {
+  return this.select(match == null ? childFirst
+      : childFind(typeof match === "function" ? match : childMatcher(match)));
+}
+
+var filter = Array.prototype.filter;
+
+function children() {
+  return Array.from(this.children);
+}
+
+function childrenFilter(match) {
+  return function() {
+    return filter.call(this.children, match);
+  };
+}
+
+function selection_selectChildren(match) {
+  return this.selectAll(match == null ? children
+      : childrenFilter(typeof match === "function" ? match : childMatcher(match)));
+}
+
+function selection_filter(match) {
+  if (typeof match !== "function") match = matcher(match);
+
+  for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
+    for (var group = groups[j], n = group.length, subgroup = subgroups[j] = [], node, i = 0; i < n; ++i) {
+      if ((node = group[i]) && match.call(node, node.__data__, i, group)) {
+        subgroup.push(node);
+      }
+    }
+  }
+
+  return new Selection(subgroups, this._parents);
+}
+
+function sparse(update) {
+  return new Array(update.length);
+}
+
+function selection_enter() {
+  return new Selection(this._enter || this._groups.map(sparse), this._parents);
+}
+
+function EnterNode(parent, datum) {
+  this.ownerDocument = parent.ownerDocument;
+  this.namespaceURI = parent.namespaceURI;
+  this._next = null;
+  this._parent = parent;
+  this.__data__ = datum;
+}
+
+EnterNode.prototype = {
+  constructor: EnterNode,
+  appendChild: function(child) { return this._parent.insertBefore(child, this._next); },
+  insertBefore: function(child, next) { return this._parent.insertBefore(child, next); },
+  querySelector: function(selector) { return this._parent.querySelector(selector); },
+  querySelectorAll: function(selector) { return this._parent.querySelectorAll(selector); }
+};
+
+function constant(x) {
+  return function() {
+    return x;
+  };
+}
+
+function bindIndex(parent, group, enter, update, exit, data) {
+  var i = 0,
+      node,
+      groupLength = group.length,
+      dataLength = data.length;
+
+  // Put any non-null nodes that fit into update.
+  // Put any null nodes into enter.
+  // Put any remaining data into enter.
+  for (; i < dataLength; ++i) {
+    if (node = group[i]) {
+      node.__data__ = data[i];
+      update[i] = node;
+    } else {
+      enter[i] = new EnterNode(parent, data[i]);
+    }
+  }
+
+  // Put any non-null nodes that don’t fit into exit.
+  for (; i < groupLength; ++i) {
+    if (node = group[i]) {
+      exit[i] = node;
+    }
+  }
+}
+
+function bindKey(parent, group, enter, update, exit, data, key) {
+  var i,
+      node,
+      nodeByKeyValue = new Map,
+      groupLength = group.length,
+      dataLength = data.length,
+      keyValues = new Array(groupLength),
+      keyValue;
+
+  // Compute the key for each node.
+  // If multiple nodes have the same key, the duplicates are added to exit.
+  for (i = 0; i < groupLength; ++i) {
+    if (node = group[i]) {
+      keyValues[i] = keyValue = key.call(node, node.__data__, i, group) + "";
+      if (nodeByKeyValue.has(keyValue)) {
+        exit[i] = node;
+      } else {
+        nodeByKeyValue.set(keyValue, node);
+      }
+    }
+  }
+
+  // Compute the key for each datum.
+  // If there a node associated with this key, join and add it to update.
+  // If there is not (or the key is a duplicate), add it to enter.
+  for (i = 0; i < dataLength; ++i) {
+    keyValue = key.call(parent, data[i], i, data) + "";
+    if (node = nodeByKeyValue.get(keyValue)) {
+      update[i] = node;
+      node.__data__ = data[i];
+      nodeByKeyValue.delete(keyValue);
+    } else {
+      enter[i] = new EnterNode(parent, data[i]);
+    }
+  }
+
+  // Add any remaining nodes that were not bound to data to exit.
+  for (i = 0; i < groupLength; ++i) {
+    if ((node = group[i]) && (nodeByKeyValue.get(keyValues[i]) === node)) {
+      exit[i] = node;
+    }
+  }
+}
+
+function datum(node) {
+  return node.__data__;
+}
+
+function selection_data(value, key) {
+  if (!arguments.length) return Array.from(this, datum);
+
+  var bind = key ? bindKey : bindIndex,
+      parents = this._parents,
+      groups = this._groups;
+
+  if (typeof value !== "function") value = constant(value);
+
+  for (var m = groups.length, update = new Array(m), enter = new Array(m), exit = new Array(m), j = 0; j < m; ++j) {
+    var parent = parents[j],
+        group = groups[j],
+        groupLength = group.length,
+        data = arraylike(value.call(parent, parent && parent.__data__, j, parents)),
+        dataLength = data.length,
+        enterGroup = enter[j] = new Array(dataLength),
+        updateGroup = update[j] = new Array(dataLength),
+        exitGroup = exit[j] = new Array(groupLength);
+
+    bind(parent, group, enterGroup, updateGroup, exitGroup, data, key);
+
+    // Now connect the enter nodes to their following update node, such that
+    // appendChild can insert the materialized enter node before this node,
+    // rather than at the end of the parent node.
+    for (var i0 = 0, i1 = 0, previous, next; i0 < dataLength; ++i0) {
+      if (previous = enterGroup[i0]) {
+        if (i0 >= i1) i1 = i0 + 1;
+        while (!(next = updateGroup[i1]) && ++i1 < dataLength);
+        previous._next = next || null;
+      }
+    }
+  }
+
+  update = new Selection(update, parents);
+  update._enter = enter;
+  update._exit = exit;
+  return update;
+}
+
+// Given some data, this returns an array-like view of it: an object that
+// exposes a length property and allows numeric indexing. Note that unlike
+// selectAll, this isn’t worried about “live” collections because the resulting
+// array will only be used briefly while data is being bound. (It is possible to
+// cause the data to change while iterating by using a key function, but please
+// don’t; we’d rather avoid a gratuitous copy.)
+function arraylike(data) {
+  return typeof data === "object" && "length" in data
+    ? data // Array, TypedArray, NodeList, array-like
+    : Array.from(data); // Map, Set, iterable, string, or anything else
+}
+
+function selection_exit() {
+  return new Selection(this._exit || this._groups.map(sparse), this._parents);
+}
+
+function selection_join(onenter, onupdate, onexit) {
+  var enter = this.enter(), update = this, exit = this.exit();
+  if (typeof onenter === "function") {
+    enter = onenter(enter);
+    if (enter) enter = enter.selection();
+  } else {
+    enter = enter.append(onenter + "");
+  }
+  if (onupdate != null) {
+    update = onupdate(update);
+    if (update) update = update.selection();
+  }
+  if (onexit == null) exit.remove(); else onexit(exit);
+  return enter && update ? enter.merge(update).order() : update;
+}
+
+function selection_merge(context) {
+  var selection = context.selection ? context.selection() : context;
+
+  for (var groups0 = this._groups, groups1 = selection._groups, m0 = groups0.length, m1 = groups1.length, m = Math.min(m0, m1), merges = new Array(m0), j = 0; j < m; ++j) {
+    for (var group0 = groups0[j], group1 = groups1[j], n = group0.length, merge = merges[j] = new Array(n), node, i = 0; i < n; ++i) {
+      if (node = group0[i] || group1[i]) {
+        merge[i] = node;
+      }
+    }
+  }
+
+  for (; j < m0; ++j) {
+    merges[j] = groups0[j];
+  }
+
+  return new Selection(merges, this._parents);
+}
+
+function selection_order() {
+
+  for (var groups = this._groups, j = -1, m = groups.length; ++j < m;) {
+    for (var group = groups[j], i = group.length - 1, next = group[i], node; --i >= 0;) {
+      if (node = group[i]) {
+        if (next && node.compareDocumentPosition(next) ^ 4) next.parentNode.insertBefore(node, next);
+        next = node;
+      }
+    }
+  }
+
+  return this;
+}
+
+function selection_sort(compare) {
+  if (!compare) compare = ascending;
+
+  function compareNode(a, b) {
+    return a && b ? compare(a.__data__, b.__data__) : !a - !b;
+  }
+
+  for (var groups = this._groups, m = groups.length, sortgroups = new Array(m), j = 0; j < m; ++j) {
+    for (var group = groups[j], n = group.length, sortgroup = sortgroups[j] = new Array(n), node, i = 0; i < n; ++i) {
+      if (node = group[i]) {
+        sortgroup[i] = node;
+      }
+    }
+    sortgroup.sort(compareNode);
+  }
+
+  return new Selection(sortgroups, this._parents).order();
+}
+
+function ascending(a, b) {
+  return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
+}
+
+function selection_call() {
+  var callback = arguments[0];
+  arguments[0] = this;
+  callback.apply(null, arguments);
+  return this;
+}
+
+function selection_nodes() {
+  return Array.from(this);
+}
+
+function selection_node() {
+
+  for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
+    for (var group = groups[j], i = 0, n = group.length; i < n; ++i) {
+      var node = group[i];
+      if (node) return node;
+    }
+  }
+
+  return null;
+}
+
+function selection_size() {
+  let size = 0;
+  for (const node of this) ++size; // eslint-disable-line no-unused-vars
+  return size;
+}
+
+function selection_empty() {
+  return !this.node();
+}
+
+function selection_each(callback) {
+
+  for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
+    for (var group = groups[j], i = 0, n = group.length, node; i < n; ++i) {
+      if (node = group[i]) callback.call(node, node.__data__, i, group);
+    }
+  }
+
+  return this;
+}
+
+function attrRemove(name) {
+  return function() {
+    this.removeAttribute(name);
+  };
+}
+
+function attrRemoveNS(fullname) {
+  return function() {
+    this.removeAttributeNS(fullname.space, fullname.local);
+  };
+}
+
+function attrConstant(name, value) {
+  return function() {
+    this.setAttribute(name, value);
+  };
+}
+
+function attrConstantNS(fullname, value) {
+  return function() {
+    this.setAttributeNS(fullname.space, fullname.local, value);
+  };
+}
+
+function attrFunction(name, value) {
+  return function() {
+    var v = value.apply(this, arguments);
+    if (v == null) this.removeAttribute(name);
+    else this.setAttribute(name, v);
+  };
+}
+
+function attrFunctionNS(fullname, value) {
+  return function() {
+    var v = value.apply(this, arguments);
+    if (v == null) this.removeAttributeNS(fullname.space, fullname.local);
+    else this.setAttributeNS(fullname.space, fullname.local, v);
+  };
+}
+
+function selection_attr(name, value) {
+  var fullname = namespace(name);
+
+  if (arguments.length < 2) {
+    var node = this.node();
+    return fullname.local
+        ? node.getAttributeNS(fullname.space, fullname.local)
+        : node.getAttribute(fullname);
+  }
+
+  return this.each((value == null
+      ? (fullname.local ? attrRemoveNS : attrRemove) : (typeof value === "function"
+      ? (fullname.local ? attrFunctionNS : attrFunction)
+      : (fullname.local ? attrConstantNS : attrConstant)))(fullname, value));
+}
+
+function defaultView(node) {
+  return (node.ownerDocument && node.ownerDocument.defaultView) // node is a Node
+      || (node.document && node) // node is a Window
+      || node.defaultView; // node is a Document
+}
+
+function styleRemove(name) {
+  return function() {
+    this.style.removeProperty(name);
+  };
+}
+
+function styleConstant(name, value, priority) {
+  return function() {
+    this.style.setProperty(name, value, priority);
+  };
+}
+
+function styleFunction(name, value, priority) {
+  return function() {
+    var v = value.apply(this, arguments);
+    if (v == null) this.style.removeProperty(name);
+    else this.style.setProperty(name, v, priority);
+  };
+}
+
+function selection_style(name, value, priority) {
+  return arguments.length > 1
+      ? this.each((value == null
+            ? styleRemove : typeof value === "function"
+            ? styleFunction
+            : styleConstant)(name, value, priority == null ? "" : priority))
+      : styleValue(this.node(), name);
+}
+
+function styleValue(node, name) {
+  return node.style.getPropertyValue(name)
+      || defaultView(node).getComputedStyle(node, null).getPropertyValue(name);
+}
+
+function propertyRemove(name) {
+  return function() {
+    delete this[name];
+  };
+}
+
+function propertyConstant(name, value) {
+  return function() {
+    this[name] = value;
+  };
+}
+
+function propertyFunction(name, value) {
+  return function() {
+    var v = value.apply(this, arguments);
+    if (v == null) delete this[name];
+    else this[name] = v;
+  };
+}
+
+function selection_property(name, value) {
+  return arguments.length > 1
+      ? this.each((value == null
+          ? propertyRemove : typeof value === "function"
+          ? propertyFunction
+          : propertyConstant)(name, value))
+      : this.node()[name];
+}
+
+function classArray(string) {
+  return string.trim().split(/^|\s+/);
+}
+
+function classList(node) {
+  return node.classList || new ClassList(node);
+}
+
+function ClassList(node) {
+  this._node = node;
+  this._names = classArray(node.getAttribute("class") || "");
+}
+
+ClassList.prototype = {
+  add: function(name) {
+    var i = this._names.indexOf(name);
+    if (i < 0) {
+      this._names.push(name);
+      this._node.setAttribute("class", this._names.join(" "));
+    }
+  },
+  remove: function(name) {
+    var i = this._names.indexOf(name);
+    if (i >= 0) {
+      this._names.splice(i, 1);
+      this._node.setAttribute("class", this._names.join(" "));
+    }
+  },
+  contains: function(name) {
+    return this._names.indexOf(name) >= 0;
+  }
+};
+
+function classedAdd(node, names) {
+  var list = classList(node), i = -1, n = names.length;
+  while (++i < n) list.add(names[i]);
+}
+
+function classedRemove(node, names) {
+  var list = classList(node), i = -1, n = names.length;
+  while (++i < n) list.remove(names[i]);
+}
+
+function classedTrue(names) {
+  return function() {
+    classedAdd(this, names);
+  };
+}
+
+function classedFalse(names) {
+  return function() {
+    classedRemove(this, names);
+  };
+}
+
+function classedFunction(names, value) {
+  return function() {
+    (value.apply(this, arguments) ? classedAdd : classedRemove)(this, names);
+  };
+}
+
+function selection_classed(name, value) {
+  var names = classArray(name + "");
+
+  if (arguments.length < 2) {
+    var list = classList(this.node()), i = -1, n = names.length;
+    while (++i < n) if (!list.contains(names[i])) return false;
+    return true;
+  }
+
+  return this.each((typeof value === "function"
+      ? classedFunction : value
+      ? classedTrue
+      : classedFalse)(names, value));
+}
+
+function textRemove() {
+  this.textContent = "";
+}
+
+function textConstant(value) {
+  return function() {
+    this.textContent = value;
+  };
+}
+
+function textFunction(value) {
+  return function() {
+    var v = value.apply(this, arguments);
+    this.textContent = v == null ? "" : v;
+  };
+}
+
+function selection_text(value) {
+  return arguments.length
+      ? this.each(value == null
+          ? textRemove : (typeof value === "function"
+          ? textFunction
+          : textConstant)(value))
+      : this.node().textContent;
+}
+
+function htmlRemove() {
+  this.innerHTML = "";
+}
+
+function htmlConstant(value) {
+  return function() {
+    this.innerHTML = value;
+  };
+}
+
+function htmlFunction(value) {
+  return function() {
+    var v = value.apply(this, arguments);
+    this.innerHTML = v == null ? "" : v;
+  };
+}
+
+function selection_html(value) {
+  return arguments.length
+      ? this.each(value == null
+          ? htmlRemove : (typeof value === "function"
+          ? htmlFunction
+          : htmlConstant)(value))
+      : this.node().innerHTML;
+}
+
+function raise() {
+  if (this.nextSibling) this.parentNode.appendChild(this);
+}
+
+function selection_raise() {
+  return this.each(raise);
+}
+
+function lower() {
+  if (this.previousSibling) this.parentNode.insertBefore(this, this.parentNode.firstChild);
+}
+
+function selection_lower() {
+  return this.each(lower);
+}
+
+function selection_append(name) {
+  var create = typeof name === "function" ? name : creator(name);
+  return this.select(function() {
+    return this.appendChild(create.apply(this, arguments));
+  });
+}
+
+function constantNull() {
+  return null;
+}
+
+function selection_insert(name, before) {
+  var create = typeof name === "function" ? name : creator(name),
+      select = before == null ? constantNull : typeof before === "function" ? before : selector(before);
+  return this.select(function() {
+    return this.insertBefore(create.apply(this, arguments), select.apply(this, arguments) || null);
+  });
+}
+
+function remove() {
+  var parent = this.parentNode;
+  if (parent) parent.removeChild(this);
+}
+
+function selection_remove() {
+  return this.each(remove);
+}
+
+function selection_cloneShallow() {
+  var clone = this.cloneNode(false), parent = this.parentNode;
+  return parent ? parent.insertBefore(clone, this.nextSibling) : clone;
+}
+
+function selection_cloneDeep() {
+  var clone = this.cloneNode(true), parent = this.parentNode;
+  return parent ? parent.insertBefore(clone, this.nextSibling) : clone;
+}
+
+function selection_clone(deep) {
+  return this.select(deep ? selection_cloneDeep : selection_cloneShallow);
+}
+
+function selection_datum(value) {
+  return arguments.length
+      ? this.property("__data__", value)
+      : this.node().__data__;
+}
+
+function contextListener(listener) {
+  return function(event) {
+    listener.call(this, event, this.__data__);
+  };
+}
+
+function parseTypenames(typenames) {
+  return typenames.trim().split(/^|\s+/).map(function(t) {
+    var name = "", i = t.indexOf(".");
+    if (i >= 0) name = t.slice(i + 1), t = t.slice(0, i);
+    return {type: t, name: name};
+  });
+}
+
+function onRemove(typename) {
+  return function() {
+    var on = this.__on;
+    if (!on) return;
+    for (var j = 0, i = -1, m = on.length, o; j < m; ++j) {
+      if (o = on[j], (!typename.type || o.type === typename.type) && o.name === typename.name) {
+        this.removeEventListener(o.type, o.listener, o.options);
+      } else {
+        on[++i] = o;
+      }
+    }
+    if (++i) on.length = i;
+    else delete this.__on;
+  };
+}
+
+function onAdd(typename, value, options) {
+  return function() {
+    var on = this.__on, o, listener = contextListener(value);
+    if (on) for (var j = 0, m = on.length; j < m; ++j) {
+      if ((o = on[j]).type === typename.type && o.name === typename.name) {
+        this.removeEventListener(o.type, o.listener, o.options);
+        this.addEventListener(o.type, o.listener = listener, o.options = options);
+        o.value = value;
+        return;
+      }
+    }
+    this.addEventListener(typename.type, listener, options);
+    o = {type: typename.type, name: typename.name, value: value, listener: listener, options: options};
+    if (!on) this.__on = [o];
+    else on.push(o);
+  };
+}
+
+function selection_on(typename, value, options) {
+  var typenames = parseTypenames(typename + ""), i, n = typenames.length, t;
+
+  if (arguments.length < 2) {
+    var on = this.node().__on;
+    if (on) for (var j = 0, m = on.length, o; j < m; ++j) {
+      for (i = 0, o = on[j]; i < n; ++i) {
+        if ((t = typenames[i]).type === o.type && t.name === o.name) {
+          return o.value;
+        }
+      }
+    }
+    return;
+  }
+
+  on = value ? onAdd : onRemove;
+  for (i = 0; i < n; ++i) this.each(on(typenames[i], value, options));
+  return this;
+}
+
+function dispatchEvent(node, type, params) {
+  var window = defaultView(node),
+      event = window.CustomEvent;
+
+  if (typeof event === "function") {
+    event = new event(type, params);
+  } else {
+    event = window.document.createEvent("Event");
+    if (params) event.initEvent(type, params.bubbles, params.cancelable), event.detail = params.detail;
+    else event.initEvent(type, false, false);
+  }
+
+  node.dispatchEvent(event);
+}
+
+function dispatchConstant(type, params) {
+  return function() {
+    return dispatchEvent(this, type, params);
+  };
+}
+
+function dispatchFunction(type, params) {
+  return function() {
+    return dispatchEvent(this, type, params.apply(this, arguments));
+  };
+}
+
+function selection_dispatch(type, params) {
+  return this.each((typeof params === "function"
+      ? dispatchFunction
+      : dispatchConstant)(type, params));
+}
+
+function* selection_iterator() {
+  for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
+    for (var group = groups[j], i = 0, n = group.length, node; i < n; ++i) {
+      if (node = group[i]) yield node;
+    }
+  }
+}
+
+var root = [null];
+
+function Selection(groups, parents) {
+  this._groups = groups;
+  this._parents = parents;
+}
+
+function selection_selection() {
+  return this;
+}
+
+Selection.prototype = {
+  constructor: Selection,
+  select: selection_select,
+  selectAll: selection_selectAll,
+  selectChild: selection_selectChild,
+  selectChildren: selection_selectChildren,
+  filter: selection_filter,
+  data: selection_data,
+  enter: selection_enter,
+  exit: selection_exit,
+  join: selection_join,
+  merge: selection_merge,
+  selection: selection_selection,
+  order: selection_order,
+  sort: selection_sort,
+  call: selection_call,
+  nodes: selection_nodes,
+  node: selection_node,
+  size: selection_size,
+  empty: selection_empty,
+  each: selection_each,
+  attr: selection_attr,
+  style: selection_style,
+  property: selection_property,
+  classed: selection_classed,
+  text: selection_text,
+  html: selection_html,
+  raise: selection_raise,
+  lower: selection_lower,
+  append: selection_append,
+  insert: selection_insert,
+  remove: selection_remove,
+  clone: selection_clone,
+  datum: selection_datum,
+  on: selection_on,
+  dispatch: selection_dispatch,
+  [Symbol.iterator]: selection_iterator
+};
+
+function select(selector) {
+  return typeof selector === "string"
+      ? new Selection([[document.querySelector(selector)]], [document.documentElement])
+      : new Selection([[selector]], root);
+}
+
+function colors(specifier) {
+  var n = specifier.length / 6 | 0, colors = new Array(n), i = 0;
+  while (i < n) colors[i] = "#" + specifier.slice(i * 6, ++i * 6);
+  return colors;
+}
+
+var Tableau10 = colors("4e79a7f28e2ce1575976b7b259a14fedc949af7aa1ff9da79c755fbab0ab");
+
+class Plot extends Component {
+    constructor(options) {
+        options = options || {};
+        super(options);
+        this.itemId = options.itemId || null;
+        this.layout = options.layout || {};
+        this.layout.margin = this.layout.margin || {top: 0, right: 0, bottom: 0, left: 0};
+        this.headerOffset = 0;
+        this.data = options.data || {};
+    }
+
+    get checkResize() {
+        const ifResize = Math.round(this.width) !== Math.round(this.lastWidth) || Math.round(this.height) !== Math.round(this.lastHeight);
+        return ifResize;
+    }
+
+    get checkMove() {
+        const ifMove = Math.round(this.left) !== Math.round(this.lastLeft) || Math.round(this.top) !== Math.round(this.lastTop);
+        return ifMove;
+    }
+
+    setLasts() {
+        this.lastWidth = this.width;
+        this.lastHeight = this.height;
+        this.lastLeft = this.left;
+        this.lastTop = this.top;
+    }
+
+    get plotAreaWidth() {
+        return this.width - this.layout.margin.left - this.layout.margin.right;
+    }
+
+    get plotAreaHeight() {
+        return this.height - this.layout.margin.top - this.layout.margin.bottom - this.headerOffset;
+    }
+
+    get plotAreaLeft() {
+        return this.layout.margin.left;
+    }
+
+    get plotAreaTop() {
+        return this.layout.margin.top + this.headerOffset;
+    }
+
+    get plotAreaId() {
+        return `${this.id}-plot-area`;
+    }
+
+    addPlotAreaDiv() {
+        const container = select(`#${this.id}`);
+        container.append("div")
+            .attr("id", `${this.plotAreaId}`)
+            .attr("class", "plot-area")
+            .style("position", "absolute")
+            .style("top", `${this.plotAreaTop}px`)
+            .style("left", `${this.plotAreaLeft}px`)
+            .style("width", `${this.plotAreaWidth}px`)
+            .style("height", `${this.plotAreaHeight}px`)
+            .attr("width", this.plotAreaWidth)
+            .attr("height", this.plotAreaHeight);
+        return;
+    }
+
+    addPlotAreaSvg() {
+        const container = select(`#${this.id}`);
+        container.append("svg")
+            .attr("id", `${this.plotAreaId}`)
+            .attr("class", "plot-area")
+            .style("position", "absolute")
+            .style("top", `${this.plotAreaTop}px`)
+            .style("left", `${this.plotAreaLeft}px`)
+            .style("width", `${this.plotAreaWidth}px`)
+            .style("height", `${this.plotAreaHeight}px`)
+            .style("overflow", "visible")
+            .attr("width", this.plotAreaWidth)
+            .attr("height", this.plotAreaHeight);
+        return;
+    }
+
+    updatePlotAreaSize() {
+        const container = select(`#${this.id}`);
+        const plotArea = container.select(".plot-area");
+        plotArea
+            .style("top", `${this.plotAreaTop}px`)
+            .style("left", `${this.plotAreaLeft}px`)
+            .style("width", `${this.plotAreaWidth}px`)
+            .style("height", `${this.plotAreaHeight}px`)
+            .attr("width", this.plotAreaWidth)
+            .attr("height", this.plotAreaHeight);
+        return;
+    }
+
+    addTitle() {
+        const container = select(`#${this.id}`);
+        if ( !this.layout.title ) {
+            container.select(".plot-title").remove();
+            return;
+        }
+        const title = container.select(".plot-title");
+        if ( title.empty() ) {
+            const newTitle = container.append("div")
+                .attr("class", "plot-title")
+                .attr("id", `${this.id}-plot-title`)
+                .style("position", "absolute")
+                .style("top", "0")
+                .style("left", "0")
+                .style("width", "100%")
+                .text(this.layout.title);
+            this.headerOffset = newTitle.node().clientHeight + 3;
+        } else {
+            title.text(this.layout.title);
+            this.headerOffset = title.node().clientHeight + 3;
+        }
+    }
+
+    updateHeader() {
+        this.addTitle();
+        return;
+    }
+
+}
+
+class NodePlot extends Plot {
+    constructor(options) {
+        options = options || {};
+        super(options);
+        this.layout.nodeBoxMargin = this.layout.nodeBoxMargin || 7;
+        this.layout.socketRadius = this.layout.socketRadius || 5;
+        this.name = options.name || "node name";
+        this.data.sockets.forEach( socket => {
+            socket.cenLast = {x: 0, y: 0};
+        });
+    }
+
+    make() {
+        this.addPlotAreaSvg();
+        this.update();
+    }
+
+    update() {
+        const node = this.data;
+        const container = select(`#${this.id}`);
+		const plotArea = container.select(".plot-area");
+        const parentId = this.ancestorIds[this.ancestorIds.length - 1];
+        const socketAbsolutePositions = this.sharedStateByAncestorId[parentId].socketAbsolutePositions;
+
+        this.updatePlotAreaSize();
+
+        const nodeBoxMargin = this.layout.nodeBoxMargin;
+        const nodeRectWidth = this.plotAreaWidth - 2 * nodeBoxMargin;
+        const nodeRectHeight = this.plotAreaHeight - 2 * nodeBoxMargin;
+        let nodeRect = plotArea.select(".node-rect");
+        let nodeTitle = plotArea.select(".node-title");
+        if (nodeRect.empty()) {
+            nodeRect = plotArea.append("rect")
+                .attr("class", "node-rect")
+                .attr("x", nodeBoxMargin)
+                .attr("y", nodeBoxMargin)
+                .attr("fill", Tableau10[node.colorIndex])
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("rx", 10);
+            nodeTitle = plotArea.append("text")
+                .attr("class", "node-title")
+                .attr("x", nodeRectWidth/2. + nodeBoxMargin )
+                .attr("y", nodeRectHeight/2. + nodeBoxMargin )
+                .attr("font-size", "16px")
+                .attr("text-anchor", "middle")
+                .attr("dominant-baseline", "middle")
+                .text(node.name);
+        }
+        nodeRect
+            .attr("width", nodeRectWidth)
+            .attr("height", nodeRectHeight);
+
+        nodeTitle
+            .attr("x", nodeRectWidth/2 + this.layout.nodeBoxMargin )
+            .attr("y", nodeRectHeight/2 + this.layout.nodeBoxMargin );
+
+        const allSockets = node.sockets;
+        const leftSockets = allSockets.filter(socket => socket.position == "left");
+        const rightSockets = allSockets.filter(socket => socket.position == "right");
+        const topSockets = allSockets.filter(socket => socket.position == "top");
+        const bottomSockets = allSockets.filter(socket => socket.position == "bottom");
+        allSockets.filter(socket => socket.position == "centre");
+
+        const leftSocketSpacing = nodeRectHeight / (leftSockets.length + 1);
+        const rightSocketSpacing = nodeRectHeight / (rightSockets.length + 1);
+        const topSocketSpacing = nodeRectWidth / (topSockets.length + 1);
+        const bottomSocketSpacing = nodeRectWidth / (bottomSockets.length + 1);
+
+        const normalLength = 100;
+
+        leftSockets.forEach((socket, index) => {
+            const socketY = (index + 1) * leftSocketSpacing + nodeBoxMargin;
+            socket.cen = {x: nodeBoxMargin, y: socketY};
+            socket.normal = {x: nodeBoxMargin - normalLength, y: socketY};
+            checkSocketMove(socket);
+        });
+        rightSockets.forEach((socket, index) => {
+            const socketY = (index + 1) * rightSocketSpacing + nodeBoxMargin;
+            socket.cen = {x: nodeRectWidth + nodeBoxMargin, y: socketY};
+            socket.normal = {x: nodeRectWidth + nodeBoxMargin + normalLength, y: socketY};
+            checkSocketMove(socket);
+        });
+        topSockets.forEach((socket, index) => {
+            const socketX = (index + 1) * topSocketSpacing + nodeBoxMargin;
+            socket.cen = {x: socketX, y: nodeBoxMargin};
+            socket.normal = {x: socketX, y: nodeBoxMargin - normalLength};
+            checkSocketMove(socket);
+        });
+        bottomSockets.forEach((socket, index) => {
+            const socketX = (index + 1) * bottomSocketSpacing + nodeBoxMargin;
+            socket.cen = {x: socketX, y: nodeRectHeight + nodeBoxMargin};
+            socket.normal = {x: socketX, y: nodeRectHeight + nodeBoxMargin + normalLength};
+            checkSocketMove(socket);
+        });
+
+        const sockets = plotArea.selectAll(".socket")
+            .data(allSockets, d => d.name);
+        sockets.enter()
+            .append("circle")
+            .attr("class", "socket")
+            .attr("r", this.layout.socketRadius)
+            .attr("fill", "white")
+            .attr("stroke", "black")
+            .attr("stroke-width", 2)
+            .attr("cx", d => d.cen.x)
+            .attr("cy", d => d.cen.y);
+        sockets
+            .attr("cx", d => d.cen.x)
+            .attr("cy", d => d.cen.y);
+        sockets.exit().remove();        
+
+
+        function checkSocketMove(socket) {
+            let socketMoved = false;
+            const rect = plotArea.node().getBoundingClientRect();
+            const cenXAbs = socket.cen.x + rect.left;
+            const cenYAbs = socket.cen.y + rect.top;
+            const xMove = Math.abs(cenXAbs - socket.cenLast.x) > 0.5;
+            const yMove = Math.abs(cenYAbs - socket.cenLast.y) > 0.5;
+            if (xMove || yMove) {
+                socketMoved = true;
+            }
+
+            if (socketMoved) {
+                socket.cenLast = {x: cenXAbs, y: cenYAbs};
+                const cen = {x:cenXAbs, y:cenYAbs};
+                const normal = {x: socket.normal.x + rect.left, y: socket.normal.y + rect.top};
+                socketAbsolutePositions.find( s => s.socketName == socket.name).position.state = {socketName: socket.name, cen, normal};
+            }
+        }
+    }
+}
+
+class ModelStructureViewer extends Plot {
+    constructor(options) {
+        options = options || {};
+        super(options);
+    }
+
+    make() {
+        this.updateHeader();
+        this.addPlotAreaSvg();
+        this.updateHeader();
+  
+        const sockets = this.data.nodes.map( node => node.sockets ).flat();
+        const socketAbsolutePositions = sockets.map( socket => 
+            { 
+                const obs = new Observable({state:{socketName: socket.name, cen: null, normal:null}});
+                obs.subscribe( this.drawLink.bind(this) );
+                return {socketName: socket.name, position: obs} 
+            });
+        this.sharedState.socketAbsolutePositions = socketAbsolutePositions;
+
+        const plotArea = select(`#${this.plotAreaId}`);
+        plotArea.append("defs").append("marker")
+            .attr("id", "arrowhead")
+            .attr("viewBox", "-10 -10 20 20")
+            .attr("refX", 10)
+            .attr("refY", 0)
+            .attr("markerWidth", 10)
+            .attr("markerHeight", 10)
+            .attr("orient", "auto")
+            .append("path")
+                .attr("d", "M-6,-6 L6,0 L-6,6 Z")
+                .attr("fill", "black");
+
+
+        this.update();
+    }
+
+    update() {
+        const nodes = this.data.nodes || [];
+        this.data.links || [];
+
+        const nodeNamesInData = nodes.map(node => node.name);
+        const currentBoxes = this.sharedState.boxes || [];
+        const currentNodeNames = currentBoxes.map(box => box.name);
+        const nodeNamesToAdd = nodeNamesInData.filter(name => !currentNodeNames.includes(name));
+        const nodeNamesToRemove = currentNodeNames.filter(name => !nodeNamesInData.includes(name));
+        const boxesToRemove = currentBoxes.filter( box => nodeNamesToRemove.includes( box.name ) ).map( box => box.boxId );
+        const boxesToAdd = [];
+        nodeNamesToAdd.forEach( name => {
+            const node = nodes.find( node => node.name == name );
+            const position = node.position;
+            const box=new Box({x: position.x, y: position.y, width: position.width, height: position.height, componentMargin:{top:0, left:0, bottom:0, right:0}, name: node.name, className: "node-plot", component: new NodePlot({data:node, name:node.name}) });
+            boxesToAdd.push(box);
+        });
+        this.sharedState.requestUpdateBoxes.state = {boxesToRemove, boxesToAdd};
+
+
+    }
+
+    drawLink(data) {
+        const socketName = data.socketName;
+        const thisSocketCen = data.cen;
+        const thisSocketNormal = data.normal;
+
+        const link = this.data.links.find( link => link.socketNames.includes(socketName) );
+        const otherSocketName = link.socketNames.find( name => name != socketName );
+        const socketAbsolutePositions = this.sharedState.socketAbsolutePositions;
+        const otherSocketPosition = socketAbsolutePositions.find( s => s.socketName == otherSocketName).position.state;
+        const otherSocketCen = otherSocketPosition.cen;
+        const otherSocketNormal = otherSocketPosition.normal;
+        let firstSocketCen, firstSocketNormal, secondSocketCen, secondSocketNormal;
+        if ( socketName == link.socketNames[0] ) {
+            firstSocketCen = thisSocketCen;
+            firstSocketNormal = thisSocketNormal;
+            secondSocketCen = otherSocketCen;
+            secondSocketNormal = otherSocketNormal;
+        } else {
+            firstSocketCen = otherSocketCen;
+            firstSocketNormal = otherSocketNormal;
+            secondSocketCen = thisSocketCen;
+            secondSocketNormal = thisSocketNormal;
+        }
+   
+        if (otherSocketCen) {
+            const plotArea = select(`#${this.plotAreaId}`);
+            const boundingRect = plotArea.node().getBoundingClientRect();
+            const x0 = boundingRect.left;
+            const y0 = boundingRect.top;
+            const pathData = `M${firstSocketCen.x-x0},${firstSocketCen.y-y0} C${firstSocketNormal.x-x0},${firstSocketNormal.y-y0} ${secondSocketNormal.x-x0},${secondSocketNormal.y-y0} ${secondSocketCen.x-x0},${secondSocketCen.y-y0}`;
+            const linkId = `${this.id}-${link.name.replace(/ /g, "-")}`;
+            let linkPath = plotArea.select(`#${linkId}`);
+            if (linkPath.empty()) {
+                linkPath = plotArea.append("path")
+                    .attr("id", linkId)
+                    .attr("d", pathData)
+                    .attr("fill", "none")
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 2)
+                    .attr("marker-end", "url(#arrowhead)");
+            } else {
+                linkPath.attr("d", pathData);
+            }
+
+
+
+        }
     }
 }
 
@@ -5475,6 +6807,7 @@ class Model {
             nJson.name = n.name;
             nJson.className = n.className;
             nJson.state = n.state;
+            nJson.displayConfig = n.displayConfig;
             nJson.sockets = n.sockets.map(s => {
                 const sJson = {};
                 sJson.name = s.name;
@@ -5546,15 +6879,34 @@ class Model {
 
     startVis(target) {
         const targetId = target || 'target';
+        console.log("creating context");
         const ctx = new Context();
+        console.log("Context created");
+        console.log("adding model to context");
         ctx.addModel(this);
-        const board = new Board({targetId, modelName:this.name, widthPercent:100, height:800});
+        console.log("model added");
+        console.log(ctx);
+        const board = new Board({targetId, modelName:this.name, widthPerCent:100, height:800});
         ctx.addBoard(board);
-        const nodeDisplayConfigs = this.nodes.map(n => n.displayConfig);
-        const box = new Box({x:0, y:0, width:750, height:500, component: new ModelStructureViewer({nodeDisplayConfigs}) });
+        console.log("board added");
+        const nodeDisplayData = this.nodes.map(n => n.displayData);
+        console.log(nodeDisplayData);
+        const linkDisplayData = this.links.map(l => l.displayData);
+        console.log(linkDisplayData);
+        const box = new Box({x:0, y:0, width:750, height:500, className: "model-structure-viewer", component: new ModelStructureViewer({data:{nodes:nodeDisplayData, links:linkDisplayData}}) });
+        console.log("box created");
+        console.log(box);
         board.addBox(box);
+        console.log("box added to board");
+        console.log("making board");
         board.make();
+        console.log(ctx);
+        return ctx;
     }
+
+    // Next steps
+    // make a ModelComponent class based on dbslice/Plot.js
+    // then make a ModelStructureViewer class based on ModelComponent
 
 
 
@@ -5573,10 +6925,11 @@ class Node {
             });
         }
         const displayConfig = options.displayConfig || {};
-        this.displayConfig = {
-            position: displayConfig.position || {x: 0, y: 0, width: 100, height: 100},
-            style: displayConfig.style || {color: 'white', borderColor: 'black', borderWidth: 1, borderRadius: 5}
-        };
+        const position = displayConfig.position || {x: 0, y: 0};
+        position.width = position.width || 100;
+        position.height = position.height || 100;
+        const colorIndex = displayConfig.colorIndex || 0;
+        this.displayConfig = { position, colorIndex };
     }
 
     getSocketId() {
@@ -5632,7 +6985,6 @@ class Node {
     }
 
     setSocketOrderByName(options) {
-        console.log(options);
         const order = options.order;
         const position = options.position;
         if (position) {
@@ -5654,8 +7006,8 @@ class Node {
             name: this.name,
             className: this.className,
             position: this.displayConfig.position,
-            style: this.displayConfig.style,
-            sockets: this.sockets.map(s => ({name: s.name, position: s.position, order: s.order}))
+            colorIndex: this.displayConfig.colorIndex,
+            sockets: this.sockets.map(s => ({name: s.name, position: s.position}))
         };
     }
 
@@ -5680,6 +7032,14 @@ class Link {
             return null;
         }
     }
+
+    get displayData() {
+        return {
+            name: this.name,
+            socketNames: [this.socket1.name, this.socket2.name]
+        };
+    }
+
 }
 
 class EnergyNode extends Node {
@@ -5708,6 +7068,7 @@ class GridExportNode extends EnergyNode {
         socketOptions.position = options.position || 'left';
         socketOptions.state = options.socketState || {max: Infinity, value:null, valueType: "variable"};
         this.setSocketByIndex(0, new Socket(socketOptions));
+        this.displayConfig.colorIndex = 2;
     }
 }
 
@@ -5722,6 +7083,7 @@ class GridSupplyNode extends EnergyNode {
         socketOptions.position = options.position || 'right'; // output on right side
         socketOptions.state = options.socketState || {max: Infinity, value:null, valueType: "variable"};
         this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
+        this.displayConfig.colorIndex = 2;
     }
 }
 
@@ -5736,6 +7098,7 @@ class LoadNode extends EnergyNode {
         socketOptions.position = options.position || 'left'; // input on left side
         socketOptions.state = options.socketState || {max: null, value:null, valueType: "constraint", timeVarying: false, timeSeries: null};
         this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
+        this.displayConfig.colorIndex = 0;
     }
 
     setConstraints() {
@@ -5761,6 +7124,7 @@ class SolarPVNode extends EnergyNode {
         socketOptions.position = options.position || 'right'; // output on right side
         socketOptions.state = options.socketState || {max: null, value:null, valueType: "constraint", timeVarying: false, timeSeries: null};
         this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
+        this.displayConfig.colorIndex = 5;
     }
 
     setConstraints() {
@@ -5787,6 +7151,7 @@ class ControllerNode extends EnergyNode {
             this.setSocketOrderByName({position: 'right', order:options.outputSocketOrder});
         }
         this.type = 'controllerNode';
+        this.displayConfig.colorIndex = 1;
     }
 
     setFluxTargets(){
@@ -5882,6 +7247,7 @@ class BatteryStorageNode extends EnergyNode {
         super(options);
         this.state.charge = 0;
         this.type = 'storageNode';
+        this.displayConfig.colorIndex = 6;
     }
 
     updateState() {
