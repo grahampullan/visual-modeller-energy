@@ -9,11 +9,12 @@
 <body>
     <!--
     <input type="range" id="solar-slider" min="0" max="2" value="1" step="any">
-    <label for="solar-slider">Solar PV output</label>
+    <label for="solar-slider">Solar PV output</label> -->
 
     <input type="range" id="batt-capacity-slider" min="1" max="10" value="5" step="any">
     <label for="batt-capacity-slider">Battery capacity</label>
 
+    <!--
     <input type="range" id="batt-max-charge-slider" min="1000" max="10000" value="3000" step="any">
     <label for="batt-max-charge-slider">Battery max charge / discharge</label> -->
 
@@ -87,9 +88,27 @@
         console.log("model loaded");
         console.log(model);
 
+        console.log("running model");
+        model.run();
+        console.log("model run");
+
         console.log("starting vis");
-        model.startVis()
+        const ctx = model.startVis()
         console.log("vis started");
+        console.log(ctx);
+        
+        d3.select("#batt-capacity-slider").on("input", function() {
+            const value = this.value;
+            const state = model.getNodeByName("Battery").state;
+            state.capacity = value;
+            state.charge = 0.
+            model.clearLogs();
+            model.run();
+            const board = ctx.boards[0];
+            board.boxes[0].component.data={nodes:model.nodes.map(n => n.displayData), links:model.links.map(l => l.displayData)};
+            board.boxes[1].component.data={logs:model.logs.map(l => l.displayData)};
+            ctx.boards[0].update();
+        });
 
         /*
         const solar = model.getSocketByName("Solar PV").state.timeSeries;

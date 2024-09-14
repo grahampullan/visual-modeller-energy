@@ -5,6 +5,8 @@ class SolarPVNode extends EnergyNode {
     constructor(options) {
         options = options || {};
         options.className = 'solarPVNode';
+        options.state = options.state || {};
+        options.state.socketMultiplier = options.state.socketMultiplier || 1;
         super(options);
         this.type = 'endNode';
         const socketOptions = {};
@@ -21,7 +23,7 @@ class SolarPVNode extends EnergyNode {
             return;
         }
         if (state.timeVarying) {
-            state.value = state.timeSeries[this.timeStep];
+            state.value = state.timeSeries[this.timeStep] * this.state.socketMultiplier;
         } 
     }
 
