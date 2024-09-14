@@ -15,7 +15,7 @@
                     "name": "Grid Supply",
                     "position": "right",
                     "state": {
-                        "max": null,
+                        "max": -1,
                         "value": null,
                         "valueType": "variable"
                     }
@@ -2952,7 +2952,7 @@
                     "name": "Grid Export",
                     "position": "left",
                     "state": {
-                        "max": null,
+                        "max": -1,
                         "value": null,
                         "valueType": "variable"
                     }
@@ -3053,58 +3053,70 @@
         {
             "name": "solar supply link",
             "socket1Name": "Solar PV",
-            "socket2Name": "Solar PV cont"
+            "socket2Name": "Solar PV cont",
+            "colorIndex": 5
         },
         {
             "name": "from battery link",
             "socket1Name": "Output",
-            "socket2Name": "Battery Supply cont"
+            "socket2Name": "Battery Supply cont",
+            "colorIndex": 4
         },
         {
             "name": "grid supply link",
             "socket1Name": "Grid Supply",
-            "socket2Name": "Grid Supply cont"
+            "socket2Name": "Grid Supply cont",
+            "colorIndex": 2
         },
         {
             "name": "load link",
             "socket1Name": "Load cont",
-            "socket2Name": "Load"
+            "socket2Name": "Load",
+            "colorIndex": 0
         },
         {
             "name": "to battery link",
             "socket1Name": "Battery Export cont",
-            "socket2Name": "Input"
+            "socket2Name": "Input",
+            "colorIndex": 6
         },
         {
             "name": "grid export link",
             "socket1Name": "Grid Export cont",
-            "socket2Name": "Grid Export"
+            "socket2Name": "Grid Export",
+            "colorIndex": 3
         }
     ],
     "logs": [
         {
             "name": "solar supply",
-            "targetName": "solar supply link"
+            "targetName": "solar supply link",
+            "colorIndex":5 
         },
         {
             "name": "from battery",
-            "targetName": "from battery link"
+            "targetName": "from battery link",
+            "colorIndex":4
         },
         {
             "name": "grid supply",
-            "targetName": "grid supply link"
+            "targetName": "grid supply link",
+            "colorIndex":2
         },
         {
             "name": "load",
-            "targetName": "load link"
+            "targetName": "load link",
+            "colorIndex":0
         },
         {
             "name": "to battery",
-            "targetName": "to battery link"
+            "targetName": "to battery link",
+            "colorIndex":6
         },
         {
             "name": "grid export",
-            "targetName": "grid export link"
+            "targetName": "grid export link",
+            "colorIndex":3
         }
     ]
 }
