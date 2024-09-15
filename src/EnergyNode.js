@@ -9,6 +9,10 @@ class EnergyNode extends Node {
     setConstraints(){
         return;
     }
+
+    initState(){
+        return;
+    }
     
     updateState(){
         return;

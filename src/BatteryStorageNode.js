@@ -7,6 +7,7 @@ class BatteryStorageNode extends EnergyNode {
         options.state = options.state || {};
         options.state.maxCharge = options.state.maxCharge || 3000;
         options.state.maxDischarge = options.state.maxDischarge || 3000;
+        options.state.initialCharge = options.state.initialCharge || 0;
         const defaultInputSocket = new Socket({name: 'Input', position: 'left', state: {max: options.state.maxCharge, value:null, valueType: "variable"}});
         const defaultOutputSocket = new Socket({name: 'Output', position: 'right', state: {max:  options.state.maxDischarge, value:null, valueType: "variable"}});
         const defaultSockets = [defaultInputSocket, defaultOutputSocket];
@@ -17,6 +18,10 @@ class BatteryStorageNode extends EnergyNode {
         this.state.charge = 0;
         this.type = 'storageNode';
         this.displayConfig.colorIndex = 6;
+    }
+
+    initState() {
+        this.state.charge = this.state.initialCharge;
     }
 
     updateState() {
