@@ -9198,6 +9198,10 @@ class EnergyNode extends Node {
     setConstraints(){
         return;
     }
+
+    initState(){
+        return;
+    }
     
     updateState(){
         return;
@@ -9389,6 +9393,7 @@ class BatteryStorageNode extends EnergyNode {
         options.state = options.state || {};
         options.state.maxCharge = options.state.maxCharge || 3000;
         options.state.maxDischarge = options.state.maxDischarge || 3000;
+        options.state.initialCharge = options.state.initialCharge || 0;
         const defaultInputSocket = new Socket({name: 'Input', position: 'left', state: {max: options.state.maxCharge, value:null, valueType: "variable"}});
         const defaultOutputSocket = new Socket({name: 'Output', position: 'right', state: {max:  options.state.maxDischarge, value:null, valueType: "variable"}});
         const defaultSockets = [defaultInputSocket, defaultOutputSocket];
@@ -9399,6 +9404,10 @@ class BatteryStorageNode extends EnergyNode {
         this.state.charge = 0;
         this.type = 'storageNode';
         this.displayConfig.colorIndex = 6;
+    }
+
+    initState() {
+        this.state.charge = this.state.initialCharge;
     }
 
     updateState() {
@@ -9504,37 +9513,20 @@ class EnergyModel extends Model {
             this.timeSteps = 1;
         }
 
+        nodes.forEach(node => node.initState());
 
         for (let i = 0; i < timeSteps; i++) {
             this.setTimeStep(i);
-            // solution process:
-            //     allNodes - set fixed fluxes and flux limits - e.g. constrained fluxes
-            //     socket.state.fluxTarget is set
-
-            nodes.forEach(node => node.setConstraints()); // needs to know time step
-            //console.log("constraints set");
-
-            //     allControllerNodes - set flux targets on sockets
-
+            
+            nodes.forEach(node => node.setConstraints()); 
+            
             nodes.filter(node => node.type === 'controllerNode').forEach(controllerNode => controllerNode.setFluxTargets());
-            //console.log("flux targets set");
-            //console.log(links);
-
-            //     allLinks - set fluxes using targets
-
+            
             links.forEach(link => link.setFlux());
-            //console.log("fluxes set");
-
-            //     allNodes - update state given current fluxes (e.g. battery)
-
+            
             nodes.forEach(node => node.updateState());
-            //console.log("states updated");
-
-            //    finally update logs
-            //    logs is array of objects {"name", [values]}
-
+            
             logs.forEach( log => log.writeToLog());
-            //console.log("logs written");
             
         }
 
