@@ -7,177 +7,18 @@
 </head>
 
 <body>
-    <!--
-    <input type="range" id="solar-slider" min="0" max="2" value="1" step="any">
-    <label for="solar-slider">Solar PV output</label> -->
-
-    <input type="range" id="batt-capacity-slider" min="1" max="10" value="5" step="any">
-    <label for="batt-capacity-slider">Battery capacity</label>
-
-    <!--
-    <input type="range" id="batt-max-charge-slider" min="1000" max="10000" value="3000" step="any">
-    <label for="batt-max-charge-slider">Battery max charge / discharge</label> -->
 
     <div id="target"></div>
 
-
-
-
-    <!-- <div id = "plot-target"></div> -->
-
     <script type="module">
 
-        import { Model, Link, Log, Socket, LoadNode, GridSupplyNode, GridExportNode, SolarPVNode, ControllerNode, BatteryStorageNode } from '../../build/visual-modeller-energy.js';
-        import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
-        import * as d3 from "https://cdn.skypack.dev/d3@7";
-
-        /*
-        const npts = 24*60; // minutes in a day
-        //const npts = 2;
-        const time = d3.range(npts);
-        const load = time.map(d => (500 + 500*Math.exp( -1.*((d-300)/80)**2 ) + 1000*Math.exp( -1.*((d-1000)/120)**2 ) ));
-        const solar = time.map(d => 2000*Math.exp( -1.*((d-720)/160)**2 ));
-
-
-        const model = new Model({config:{timeSteps: npts, timeVarying:true, timeStepSize:60 }});
-        const gridSupplyNode = new GridSupplyNode();
-        const loadNode = new LoadNode({socketState:{max: null, value:null, valueType:"constraint", timeVarying: true, timeSeries: load}});
-        const solarNode = new SolarPVNode({socketState:{max: null, value:null, valueType:"constraint", timeVarying: true, timeSeries: solar}});
-        const gridExportNode = new GridExportNode();
-        const batteryStorageNode = new BatteryStorageNode({name:"Battery Node"});
-        model.addNode(gridSupplyNode);
-        model.addNode(loadNode);
-        model.addNode(solarNode);
-        model.addNode(gridExportNode);
-        model.addNode(batteryStorageNode);
-        const controllerSolarSocket = new Socket({name:"Solar PV cont", position:"left" });
-        const controllerBatterySupplySocket = new Socket({name:"Battery Supply cont", position:"left"});
-        const controllerGridSupplySocket = new Socket({name:"Grid Supply cont", position:"left"});
-        const controllerLoadSocket = new Socket({name:"Load cont", position:"right"});
-        const controllerBatteryExportSocket = new Socket({name:"Battery Export cont", position:"right"});
-        const controllerGridExportSocket = new Socket({name:"Grid Export cont", position:"right"});
-        const controllerSockets = [controllerSolarSocket, controllerBatterySupplySocket, controllerGridSupplySocket, controllerLoadSocket, controllerBatteryExportSocket, controllerGridExportSocket];
-        const controllerNode = new ControllerNode({sockets: controllerSockets, inputSocketOrder:["Solar PV cont", "Battery Supply cont", "Grid Supply cont"], outputSocketOrder:[ "Load cont", "Battery Export cont", "Grid Export cont"]});
-        model.addNode(controllerNode);
-
-
-        const link1 = new Link({name:"solar supply link", socket1: solarNode.sockets[0], socket2: controllerSolarSocket});
-        const link2 = new Link({name:"from battery link", socket1: batteryStorageNode.sockets[1], socket2: controllerBatterySupplySocket});
-        const link3 = new Link({name:"grid supply link", socket1: gridSupplyNode.sockets[0], socket2: controllerGridSupplySocket});
-        const link4 = new Link({name:"load link", socket1: controllerLoadSocket, socket2: loadNode.sockets[0]});
-        const link5 = new Link({name:"to battery link", socket1: controllerBatteryExportSocket, socket2: batteryStorageNode.sockets[0]});
-        const link6 = new Link({name:"grid export link", socket1: controllerGridExportSocket, socket2: gridExportNode.sockets[0]});
-        model.addLink(link1);
-        model.addLink(link2);
-        model.addLink(link3);
-        model.addLink(link4);
-        model.addLink(link5);
-        model.addLink(link6);
-        console.log(model);
-        model.addLog(new Log({name:"solar supply", target:link1}));
-        model.addLog(new Log({name:"from battery", target:link2}));
-        model.addLog(new Log({name:"grid supply", target:link3}));
-        model.addLog(new Log({name:"load", target:link4}));
-        model.addLog(new Log({name:"to battery", target:link5}));
-        model.addLog(new Log({name:"grid export", target:link6}));
-        */
-        
+        //import { Model, Link, Log, Socket, LoadNode, GridSupplyNode, GridExportNode, SolarPVNode, ControllerNode, BatteryStorageNode } from '../../build/visual-modeller-energy.js';
+        import { Model } from '../../build/visual-modeller-energy.js';
         
         const model = new Model();
         await model.loadFromUrl("./domestic-solar.json");
-        console.log("model loaded");
-        console.log(model);
-
-        console.log("running model");
         model.run();
-        console.log("model run");
-
-        console.log("starting vis");
         const ctx = model.startVis()
-        console.log("vis started");
-        console.log(ctx);
-        
-        d3.select("#batt-capacity-slider").on("input", function() {
-            const value = this.value;
-            const state = model.getNodeByName("Battery").state;
-            state.capacity = value;
-            state.charge = 0.
-            model.clearLogs();
-            model.run();
-            const board = ctx.boards[0];
-            board.boxes[0].component.data={nodes:model.nodes.map(n => n.displayData), links:model.links.map(l => l.displayData)};
-            board.boxes[1].component.data={logs:model.logs.map(l => l.displayData)};
-            ctx.boards[0].update();
-        });
-
-        /*
-        const solar = model.getSocketByName("Solar PV").state.timeSeries;
-
-        runAndPlot();
-        //model.saveToFile();
-
-
-        function plotLogs() {
-            const time = d3.range(model.config.timeSteps);
-            const plotData = time.map((t,i) => {
-                const obj = {time: t};
-                model.logs.forEach(l => {
-                    obj[l.name] = l.states[i].value;
-                });
-                return obj;
-            });
-
-            const plot = Plot.plot({
-                marks: [
-                    Plot.line(plotData, {x: "time", y: "solar supply", stroke: "yellow"}),
-                    Plot.line(plotData, {x: "time", y: "from battery", stroke: "green"}),
-                    Plot.line(plotData, {x: "time", y: "grid supply", stroke: "blue"}),
-                    Plot.line(plotData, {x: "time", y: "load", stroke: "red"}),
-                    Plot.line(plotData, {x: "time", y: "to battery", stroke: "purple"}),
-                    Plot.line(plotData, {x: "time", y: "grid export", stroke: "orange"}),
-                    Plot.ruleY([0]),
-                    Plot.ruleY([4000]),
-                    Plot.ruleX([0])
-                ],
-                x: {label: "Time (min)"},
-                y: {label: "Power (W)"}
-            });
-
-            // use d3 to remove the old plot and add the new one
-            d3.select("#plot-target").selectAll("*").remove();
-            d3.select("#plot-target").node().append(plot);
-        }
-
-        d3.select("#solar-slider").on("input", function() {
-            const value = this.value;
-            model.getSocketByName("Solar PV").state.timeSeries = solar.map(s => s*value);
-            runAndPlot();
-        });
-
-        
-        d3.select("#batt-capacity-slider").on("input", function() {
-            const value = this.value;
-            const state = model.getNodeByName("Battery Node").state;
-            state.capacity = value;
-            runAndPlot();
-        });
-
-        d3.select("#batt-max-charge-slider").on("input", function() {
-            const value = this.value;
-            const state = model.getNodeByName("Battery Node").state;
-            state.maxCharge = value;
-            state.maxDischarge = value;
-            runAndPlot();
-        });
-
-        function runAndPlot() {
-            model.getNodeByName("Battery Node").state.charge = 0;
-            model.clearLogs();
-            model.run();
-            plotLogs();
-        }
-        */
-
 
     </script>
 </body>

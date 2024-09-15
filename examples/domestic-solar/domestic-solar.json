@@ -8,7 +8,7 @@
         {
             "name": "Grid Supply",
             "className": "gridSupplyNode",
-            "displayConfig" : {"position": {"x": 20, "y": 250}},
+            "displayConfig" : {"position": {"x": 20, "y": 200}},
             "state": {},
             "sockets": [
                 {
@@ -25,7 +25,7 @@
         {
             "name": "Load",
             "className": "loadNode",
-            "displayConfig" : {"position": {"x": 400, "y": 20}},
+            "displayConfig" : {"position": {"x": 400, "y": 40}},
             "state": {},
             "sockets": [
                 {
@@ -1485,7 +1485,7 @@
         {
             "name": "Solar PV",
             "className": "solarPVNode",
-            "displayConfig" : {"position": {"x": 20, "y": 20}},
+            "displayConfig" : {"position": {"x": 20, "y": 40}},
             "state": {},
             "sockets": [
                 {
@@ -2945,7 +2945,7 @@
         {
             "name": "Grid Export",
             "className": "gridExportNode",
-            "displayConfig" : {"position": {"x": 500, "y": 300}},
+            "displayConfig" : {"position": {"x": 400, "y": 200}},
             "state": {},
             "sockets": [
                 {
@@ -2962,7 +2962,7 @@
         {
             "name": "Battery",
             "className": "batteryStorageNode",
-            "displayConfig" : {"position": {"x": 200, "y": 400}},
+            "displayConfig" : {"position": {"x": 200, "y": 350}},
             "state": {
                 "maxCharge": 3000,
                 "maxDischarge": 3000,
@@ -2993,7 +2993,7 @@
         {
             "name": "Controller",
             "className": "controllerNode",
-            "displayConfig" : {"position": {"x": 200, "y": 200}},
+            "displayConfig" : {"position": {"x": 200, "y": 100}},
             "state": {},
             "sockets": [
                 {
