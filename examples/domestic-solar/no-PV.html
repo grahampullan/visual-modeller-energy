@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+    <div id="target"></div>
+
+    <script type="module">
+
+        import { Model } from '../../build/visual-modeller-energy.js';
+        
+        const model = new Model();
+        await model.loadFromUrl("./no-PV.json");
+        model.run();
+        const ctx = model.startVis()
+        console.log(ctx);
+
+    </script>
+</body>
+
+
+</html>
