@@ -12,13 +12,13 @@
 
     <script type="module">
 
-        //import { Model, Link, Log, Socket, LoadNode, GridSupplyNode, GridExportNode, SolarPVNode, ControllerNode, BatteryStorageNode } from '../../build/visual-modeller-energy.js';
         import { Model } from '../../build/visual-modeller-energy.js';
         
         const model = new Model();
         await model.loadFromUrl("./domestic-solar.json");
         model.run();
         const ctx = model.startVis()
+        console.log(ctx);
 
     </script>
 </body>

@@ -4,6 +4,9 @@ import { ControllerNode } from './ControllerNode';
 import { GridExportNode } from './GridExportNode';
 import { GridSupplyNode } from './GridSupplyNode';
 import { LoadNode } from './LoadNode';
+import { WaterDemandNode } from './WaterDemandNode';
+import { WaterSupplyNode } from './WaterSupplyNode';
+import { ElectricWaterHeaterNode } from './ElectricWaterHeaterNode';
 import { SolarPVNode } from './SolarPVNode';
 import { EnergyLink } from './EnergyLink';
 
@@ -21,7 +24,7 @@ class EnergyModel extends Model {
     }
 
     get availableNodeClasses() {
-        return [BatteryStorageNode, ControllerNode, GridExportNode, GridSupplyNode, LoadNode, SolarPVNode]; 
+        return [BatteryStorageNode, ControllerNode, GridExportNode, GridSupplyNode, LoadNode, SolarPVNode, WaterDemandNode, WaterSupplyNode, ElectricWaterHeaterNode]; 
     }
 
     get availableLinkClasses() {
