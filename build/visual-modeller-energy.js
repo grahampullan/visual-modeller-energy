@@ -9433,6 +9433,106 @@ class BatteryStorageNode extends EnergyNode {
 
 }
 
+class WaterDemandNode extends EnergyNode {
+    constructor(options) {
+        options = options || {};
+        options.className = 'waterDemandNode';
+        options.state = options.state || {};
+        options.state.socketMultiplier = options.state.socketMultiplier || 1;
+        super(options);
+        this.type = 'endNode';
+        const socketOptions = {};
+        socketOptions.name = options.socketName || 'Water Demand';
+        socketOptions.position = options.position || 'bottom'; 
+        socketOptions.state = options.socketState || {max: null, value:null, valueType: "constraint", timeVarying: false, timeSeries: null};
+        this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
+        this.displayConfig.colorIndex = 7;
+    }
+
+    setConstraints() {
+        const state = this.getSocketByIndex(0).state;
+        if (state.valueType !== "constraint") {
+            return;
+        }
+        if (state.timeVarying) {
+            state.value = state.timeSeries[this.timeStep] * this.state.socketMultiplier;
+        } 
+    }
+
+}
+
+class WaterSupplyNode extends EnergyNode {
+    constructor(options) {
+        options = options || {};
+        options.className = 'waterSupplyNode';
+        super(options);
+        this.type = 'endNode';
+        const socketOptions = {};
+        socketOptions.name = options.socketName || 'Water Supply';
+        socketOptions.position = options.position || 'top'; // output on right side
+        socketOptions.state = options.socketState || {max: Infinity, value:null, valueType: "variable"};
+        this.setSocketByIndex(0, new Socket(socketOptions)); // endNode so only one socket
+        this.displayConfig.colorIndex = 9;
+    }
+}
+
+class ElectricWaterHeaterNode extends EnergyNode {
+    constructor(options) {
+        options = options || {};
+        options.state = options.state || {};
+        options.state.maxHeaterPower = options.state.maxHeaterPower || 3000;
+        options.state.maxWaterTemp = options.state.maxWaterTemp || 60;
+        options.state.initialWaterTemp = options.state.initialWaterTemp || 20;
+        options.state.capacity = options.state.capacity || 2000;
+        const defaultWaterInputSocket = new Socket({name: 'Heater Water In', position: 'bottom', state: {max: Infinity, value:0, valueType: "target"}});
+        const defaultWaterOutputSocket = new Socket({name: 'Heater Water Out', position: 'top', state: {max:  Infinity, value:null, valueType: "variable"}});
+        const defaultElectricInputSocket = new Socket({name: 'Heater Power In', position: 'left', state: {max: options.state.maxHeaterPower, value:null, valueType: "variable"}});
+        const defaultSockets = [defaultWaterInputSocket, defaultWaterOutputSocket, defaultElectricInputSocket];
+        options.sockets = options.sockets || defaultSockets;
+        options.className = 'electricWaterHeaterNode';
+        super(options);
+        this.state.waterTemp = options.state.initialWaterTemp;
+        this.type = 'storageNode';
+        this.displayConfig.colorIndex = 8;
+    }
+
+    initState() {
+        this.state.waterTemp = this.state.initialWaterTemp;
+    }
+
+    updateState() {
+        const waterInSocket = this.getSocketByIndex(0); // hard coded socket index
+        const waterOutSocket = this.getSocketByIndex(1); // hard coded socket index
+        const powerInSocket = this.getSocketByIndex(2); // hard coded socket index
+        waterInSocket.link;
+        const waterOutLink = waterOutSocket.link;
+        const powerInLink = powerInSocket.link;
+        //const waterIn = waterInLink.state.value; // in litres per second
+        const waterOut = waterOutLink.state.value;
+        const powerIn = powerInLink.state.value; // in W
+        const waterInTemp = 10; // hard coded water temp
+        const massInOneLitre = 1; // mass in kg of water in 1 litre
+        const waterSpecificHeat = 4.186 * 1000; // in J/kgK
+
+        //console.log("watreInLink", waterInLink);
+        //console.log("waterOutLink", waterOutLink);
+
+        waterInSocket.state.value = waterOutLink.state.value; // flow rates are made equal
+        waterInSocket.state.valueType = "target";
+        const waterIn = waterOut;
+
+        const delWaterTemp = this.timeStepSize * (powerIn/waterSpecificHeat + waterIn*massInOneLitre*waterInTemp - waterOut*massInOneLitre*this.state.waterTemp) / (this.state.capacity * massInOneLitre);
+        this.state.waterTemp += delWaterTemp;
+        this.state.waterTemp = Math.min(this.state.waterTemp, this.state.maxWaterTemp);
+
+        const maxPowerIn = Math.min(this.state.maxHeaterPower, (this.state.maxWaterTemp - this.state.waterTemp)*waterSpecificHeat*this.state.capacity*massInOneLitre/this.timeStepSize);
+        powerInSocket.state.max = maxPowerIn;
+
+
+    }
+
+}
+
 class EnergyLink extends Link {
     constructor(options) {
         super(options);
@@ -9484,7 +9584,7 @@ class EnergyModel extends Model {
     }
 
     get availableNodeClasses() {
-        return [BatteryStorageNode, ControllerNode, GridExportNode, GridSupplyNode, LoadNode, SolarPVNode]; 
+        return [BatteryStorageNode, ControllerNode, GridExportNode, GridSupplyNode, LoadNode, SolarPVNode, WaterDemandNode, WaterSupplyNode, ElectricWaterHeaterNode]; 
     }
 
     get availableLinkClasses() {
