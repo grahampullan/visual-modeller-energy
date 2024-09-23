@@ -25,6 +25,6 @@
     "@rollup/plugin-terser": "^0.4.4"
   },
   "dependencies": {
-    "visual-modeller-core": "^0.0.2"
+    "visual-modeller-core": "^0.1.0"
   }
 }
