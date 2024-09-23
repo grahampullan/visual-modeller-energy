@@ -1,6 +1,6 @@
 {
   "name": "visual-modeller-energy",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "",
   "main": "build/visual-modeller-energy.min.js",
   "module": "build/visual-modeller-energy.js",
