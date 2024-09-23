@@ -2,7 +2,8 @@
     "config": {
         "timeVarying": true,
         "timeSteps": 1440,
-        "timeStepSize": 60
+        "timeStepSize": 60,
+        "timeIntegrationUnitFactor": 3600000
     },
     "nodes": [
         {
